@@ -128,6 +128,9 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Property<double>("BanKinh")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("ChildrenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("KinhDo")
                         .HasColumnType("float");
 
@@ -147,6 +150,8 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("DangerZoneId");
+
+                    b.HasIndex("ChildrenId");
 
                     b.ToTable("DangerZones");
                 });
@@ -251,6 +256,9 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Property<double>("BanKinh")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("ChildrenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("KinhDo")
                         .HasColumnType("float");
 
@@ -268,6 +276,8 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
 
                     b.HasKey("SafeZoneId");
 
+                    b.HasIndex("ChildrenId");
+
                     b.ToTable("SafeZones");
                 });
 
@@ -278,6 +288,15 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DangerZone", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildrenId");
 
                     b.Navigation("Child");
                 });
@@ -311,6 +330,15 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.SafeZone", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildrenId");
 
                     b.Navigation("Child");
                 });

@@ -1,0 +1,48 @@
+﻿using Backend_QLTE.ChildService.Application.DTOs.Client.Child;
+using Backend_QLTE.ChildService.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Backend_QLTE.ChildService.Api.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ChildController : ControllerBase
+    {
+        private readonly IChildService _childService;
+
+        public ChildController(IChildService childService)
+        {
+            _childService = childService;
+        }
+
+        [HttpGet("GetChildrenByUserId")]
+        public async Task<IActionResult> GetChildrenByUserId(string userId)
+        {
+            var result = await _childService.GetChildrenByUserIdAsync(userId);
+            return Ok(result);
+        }
+
+
+        [HttpPost("CreateChild")]
+        public async Task<IActionResult> CreateChild ([FromForm]CreateChildRequestDTO request)
+        {
+            var result = await _childService.CreateChildAsync(request);
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateChild")]
+        public async Task<IActionResult> UpdateChild([FromForm] UpdateChildRequestDTO request)
+        {
+            var result = await _childService.UpdateChildAsync(request);
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteChild")]
+        public async Task<IActionResult> DeleteChild(Guid childrenId)
+        {
+            var result = await _childService.DeleteChildAsync(childrenId);
+            return Ok(result);
+        }
+    }
+}

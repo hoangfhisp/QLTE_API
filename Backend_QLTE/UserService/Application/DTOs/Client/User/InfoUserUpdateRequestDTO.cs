@@ -4,6 +4,9 @@ namespace Backend_QLTE.UserService.Application.DTOs.Client.User
 {
     public class InfoUserUpdateRequestDTO
     {
+        [Required(ErrorMessage = "UserId là bắt buộc")]
+        public string? UserId { get; set; } // Tên tài khoản user
+
         [Required(ErrorMessage = "Tên tài khoản là bắt buộc")]
         [RegularExpression("^[a-zA-Z0-9]+$", ErrorMessage = "Tên tài khoản chỉ được chứa chữ và số")]
         public string UserName { get; set; } // Tên tài khoản user

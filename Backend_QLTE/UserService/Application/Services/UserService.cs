@@ -170,15 +170,23 @@ namespace Backend_QLTE.UserService.Application.Services
         public async Task<ResultDTO<UpdateInfoUserResponseDTO>> UpdateInfoUserAsync(InfoUserUpdateRequestDTO update, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation(": Bắt đầu cập nhật thông tin user {UserName}", update.UserName);
-            // Lấy userId từ token
-            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value; // User mặc định có Claims là rỗng chứ không null.
-            if (string.IsNullOrEmpty(userId))
+            string userId;
+            if (string.IsNullOrWhiteSpace(update.UserId))
             {
-                _logger.LogWarning("Orchestrator: Không xác định được UserId đã gửi update!");
-                throw new UserNotFoundByIdException(userId);
+                // Lấy userId từ token
+                userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value; // User mặc định có Claims là rỗng chứ không null.
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Orchestrator: Không xác định được UserId đã gửi update!");
+                    throw new UserNotFoundByIdException(userId);
+                }
+            }
+            else
+            {
+                userId = update.UserId;
             }
 
-            var userUpdate = await _userOrchestrator.UpdateInfoUserAsync(update,userId, cancellationToken);
+            var userUpdate = await _userOrchestrator.UpdateInfoUserAsync(update, userId, cancellationToken);
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

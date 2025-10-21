@@ -1,0 +1,47 @@
+﻿using Backend_QLTE.ChildService.Application.DTOs.Client.Child;
+using Backend_QLTE.ChildService.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Backend_QLTE.ChildService.Api.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DangerZoneController : ControllerBase
+    {
+        private readonly IZoneService _zoneService;
+
+        public DangerZoneController(IZoneService zoneService)
+        {
+            _zoneService = zoneService;
+        }
+
+        [HttpGet("GetDangerZoneByUserId")]
+        public async Task<IActionResult> GetDangerZoneByUserId(string userId)
+        {
+            var result = await _zoneService.GetDangerZoneByUserIdAsync(userId);
+            return Ok(result);
+        }
+
+        [HttpPost("CreateDangerZone")]
+        public async Task<IActionResult> CreateDangerZone(CreateDangerZoneRequestDTO request)
+        {
+            var result = await _zoneService.CreateDangerZoneAsync(request);
+            return Ok(result);
+        }
+
+        [HttpPost("UpdateDangerZone")]
+        public async Task<IActionResult> UpdateDangerZone(UpdateDangerZoneRequestDTO request)
+        {
+            var result = await _zoneService.UpdateDangerZoneAsync(request);
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteDangerZone")]
+        public async Task<IActionResult> DeleteDangerZone(Guid dangerZoneId)
+        {
+            var result = await _zoneService.DeleteDangerZoneAsync(dangerZoneId);
+            return Ok(result);
+        }
+    }
+}

@@ -2,6 +2,7 @@
 //using Backend_QLTE.ChildService.Domain.Exceptions.Failed;
 //using Backend_QLTE.ChildService.Domain.Exceptions.Invalid;
 //using Backend_QLTE.ChildService.Domain.Exceptions.NotFounds;
+using Backend_QLTE.ChildService.shared.Exceptions;
 using Backend_QLTE.ChildService.Shared.Exceptions;
 using System.Net;
 //using Backend_QLTE.ChildService.Domain.Exceptions.Invalids;
@@ -50,10 +51,9 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments("/api/Pet") &&
-                !context.Request.Path.StartsWithSegments("/api/AdoptionRequest") &&
-                !context.Request.Path.StartsWithSegments("/api/VaccinationSchedule") &&
-                !context.Request.Path.StartsWithSegments("/api/ChatMessage")
+            if (!context.Request.Path.StartsWithSegments("/api/Child") 
+                && !context.Request.Path.StartsWithSegments("/api/SafeZone")
+
                 )
             {
                 await _next(context);
@@ -62,6 +62,19 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
             try
             {
                 await _next(context);
+            }
+            catch (ApiException ex)
+            {
+                context.Response.StatusCode = ex.StatusCode;
+                context.Response.ContentType = "application/json";
+
+                var result = new
+                {
+                    Status = false,
+                    Msg = ex.Message
+                };
+
+                await context.Response.WriteAsJsonAsync(result);
             }
             catch (DomainException ex)
             {
@@ -75,8 +88,8 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
                 context.Response.StatusCode = statusCode;
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    success = false,
-                    message = ex.Message,
+                    Status = false,
+                    Msg = ex.Message,
                 });
             }
             catch (BusinessException ex) // lỗi nghiệp vụ

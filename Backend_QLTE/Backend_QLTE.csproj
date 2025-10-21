@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ChildService\Api\Controllers\" />
     <Folder Include="ChildService\Application\Exceptions\Duplicates\" />
     <Folder Include="ChildService\Application\Exceptions\Failed\" />
     <Folder Include="ChildService\Application\Exceptions\Invalids\" />
@@ -38,10 +37,8 @@
     <Folder Include="ChildService\Application\Interfaces\Mappers\" />
     <Folder Include="ChildService\Application\Interfaces\Orchestrators\" />
     <Folder Include="ChildService\Application\Interfaces\Repositories\" />
-    <Folder Include="ChildService\Application\Interfaces\Services\" />
     <Folder Include="ChildService\Application\Mappers\" />
     <Folder Include="ChildService\Application\Orchestrators\" />
-    <Folder Include="ChildService\Application\Services\" />
     <Folder Include="ChildService\Domain\Exceptions\Duplicates\" />
     <Folder Include="ChildService\Domain\Exceptions\Failed\" />
     <Folder Include="ChildService\Domain\Exceptions\Invalid\" />
@@ -51,6 +48,7 @@
     <Folder Include="ChildService\Infrastructure\Data\Configurations\" />
     <Folder Include="ChildService\Infrastructure\Data\Migrations\" />
     <Folder Include="ChildService\Infrastructure\Repositories\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
