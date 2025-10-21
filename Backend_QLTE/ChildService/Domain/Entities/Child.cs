@@ -26,6 +26,7 @@ namespace Backend_QLTE.ChildService.Domain.Entities
         public ICollection<LocationHistory> LocationHistories { get; set; } = new List<LocationHistory>();
         public ICollection<Alert> Alerts { get; set; } = new List<Alert>();
         public ICollection<SOSRequest> SOSRequests { get; set; } = new List<SOSRequest>();
+        public ICollection<StudyPeriod> StudyPeriods { get; set; } = new List<StudyPeriod>();
         public DeviceInfo? DeviceInfo { get; set; }
     }
 }

@@ -271,6 +271,43 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.ToTable("SafeZones");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.StudyPeriod", b =>
+                {
+                    b.Property<Guid>("StudyPeriodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RepeatPattern")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("StudyPeriodId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("StudyPeriods");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Alert", b =>
                 {
                     b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
@@ -315,6 +352,17 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("Child");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.StudyPeriod", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany("StudyPeriods")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Child", b =>
                 {
                     b.Navigation("Alerts");
@@ -324,6 +372,8 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("LocationHistories");
 
                     b.Navigation("SOSRequests");
+
+                    b.Navigation("StudyPeriods");
                 });
 #pragma warning restore 612, 618
         }

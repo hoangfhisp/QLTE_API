@@ -7,6 +7,7 @@ using Backend_QLTE.ChildService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Backend_QLTE.ChildService;
 
 var builder = WebApplication.CreateBuilder(args);
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -99,9 +100,7 @@ builder.Services.AddDataProtection();
 // ✅ Đăng ký các microservice modules
 builder.Services.AddUserService(builder.Configuration);
 builder.Services.AddAuthService(builder.Configuration);
-
-// ✅ (tùy chọn) Nếu bạn sau này có AddChildService(), có thể thêm ở đây
-// builder.Services.AddChildService(builder.Configuration);
+builder.Services.AddChildService(builder.Configuration);
 
 var app = builder.Build();
 
@@ -124,9 +123,7 @@ app.UseAuthorization();
 // ✅ Gọi các pipeline microservice
 app.AuthAuthService();
 app.UseUserService();
-
-// ✅ (tùy chọn) Nếu có pipeline cho ChildService, thêm ở đây
-// app.UseChildService();
+app.UseChildService();
 
 app.MapControllers();
 

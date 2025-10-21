@@ -15,23 +15,28 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data
         public DbSet<SOSRequest> SOSRequests { get; set; }
         public DbSet<DeviceInfo> DeviceInfos { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<StudyPeriod> StudyPeriods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // quan hệ 1-1: Child - DeviceInfo
             modelBuilder.Entity<Child>()
                 .HasOne(c => c.DeviceInfo)
                 .WithOne(d => d.Child)
                 .HasForeignKey<DeviceInfo>(d => d.ChildId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // quan hệ 1-n: Child - LocationHistory
             modelBuilder.Entity<Child>()
                 .HasMany(c => c.LocationHistories)
                 .WithOne(l => l.Child)
                 .HasForeignKey(l => l.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Child>()
+                .HasMany(c => c.StudyPeriods)
+                .WithOne(sp => sp.Child)
+                .HasForeignKey(sp => sp.ChildId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

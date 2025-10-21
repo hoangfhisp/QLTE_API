@@ -1,11 +1,10 @@
-﻿//using Backend_QLTE.ChildService.Domain.Exceptions.Duplicates;
-//using Backend_QLTE.ChildService.Domain.Exceptions.Failed;
-//using Backend_QLTE.ChildService.Domain.Exceptions.Invalid;
-//using Backend_QLTE.ChildService.Domain.Exceptions.NotFounds;
+﻿using Backend_QLTE.ChildService.Domain.Exceptions.Duplicates;
+using Backend_QLTE.ChildService.Domain.Exceptions.Failed;
+using Backend_QLTE.ChildService.Domain.Exceptions.Invalid;
+using Backend_QLTE.ChildService.Domain.Exceptions.NotFounds;
+using Backend_QLTE.ChildService.Domain.Exceptions;
 using Backend_QLTE.ChildService.Shared.Exceptions;
 using System.Net;
-//using Backend_QLTE.ChildService.Domain.Exceptions.Invalids;
-//using Backend_QLTE.ChildService.Domain.Exceptions;
 //using Backend_QLTE.ChildService.Domain.Exceptions.Unauthorized;
 
 namespace Backend_QLTE.ChildService.Api.Middlewares
@@ -29,31 +28,20 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
             //{ typeof(InvalidPetException), StatusCodes.Status500InternalServerError },
             //{ typeof(PetNotFoundException), StatusCodes.Status500InternalServerError },
 
-            //// AdoptionRequest
-            //{ typeof(DuplicateAdoptionRequestException), StatusCodes.Status500InternalServerError },
-            //{ typeof(AdoptionRequestFailedException), StatusCodes.Status500InternalServerError },
-            //{ typeof(InvalidAdoptionRequestException), StatusCodes.Status500InternalServerError },
-            //{ typeof(AdoptionRequestNotFoundException), StatusCodes.Status500InternalServerError },
-
-            //// VaccinationSchedule
-            //{ typeof(DuplicateVaccinationScheduleException), StatusCodes.Status500InternalServerError },
-            //{ typeof(VaccinationScheduleFailedException), StatusCodes.Status500InternalServerError },
-            //{ typeof(InvalidVaccinationScheduleException), StatusCodes.Status500InternalServerError },
-            //{ typeof(VaccinationScheduleNotFoundException), StatusCodes.Status500InternalServerError },
-
-            //// Chat
-            //{ typeof(UnauthorizedChatAccessException), StatusCodes.Status500InternalServerError },
-            //{ typeof(InvalidChatMessageException), StatusCodes.Status500InternalServerError },
-            //{ typeof(ChatMessageNotFoundException), StatusCodes.Status500InternalServerError },
+            // StudyPrediost
+            { typeof(DuplicateStudyPeriodException), StatusCodes.Status400BadRequest },
+            { typeof(StudyPeriodFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidStudyPeriodException), StatusCodes.Status400BadRequest },
+            { typeof(StudyPeriodNotFoundException), StatusCodes.Status404NotFound },
 
         };
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments("/api/Pet") &&
-                !context.Request.Path.StartsWithSegments("/api/AdoptionRequest") &&
-                !context.Request.Path.StartsWithSegments("/api/VaccinationSchedule") &&
-                !context.Request.Path.StartsWithSegments("/api/ChatMessage")
+            if (!context.Request.Path.StartsWithSegments("/api/Child") &&
+                !context.Request.Path.StartsWithSegments("/api/DangerZone") &&
+                !context.Request.Path.StartsWithSegments("/api/SafeZone") &&
+                !context.Request.Path.StartsWithSegments("/api/StudyPeriod")
                 )
             {
                 await _next(context);

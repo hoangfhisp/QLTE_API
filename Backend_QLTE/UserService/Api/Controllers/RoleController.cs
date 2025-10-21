@@ -20,7 +20,7 @@ namespace Backend_QLTE.UserService.Api.Controllers
 
         // Tạo Role mới
         [HttpPost("Create")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateRole(RoleCreateDTO createRole, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Bắt đầu CreateRole với role {RoleName}", createRole.RoleName);
