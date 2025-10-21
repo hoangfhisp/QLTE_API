@@ -1,5 +1,6 @@
 ﻿using Backend_QLTE.ChildService.Application.DTOs.Client.Child;
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpGet("GetChildrenByUserId")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> GetChildrenByUserId(string userId)
         {
             var result = await _childService.GetChildrenByUserIdAsync(userId);
@@ -25,6 +27,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
 
         [HttpPost("CreateChild")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> CreateChild ([FromForm]CreateChildRequestDTO request)
         {
             var result = await _childService.CreateChildAsync(request);
@@ -32,6 +35,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpPut("UpdateChild")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> UpdateChild([FromForm] UpdateChildRequestDTO request)
         {
             var result = await _childService.UpdateChildAsync(request);
@@ -39,6 +43,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpDelete("DeleteChild")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> DeleteChild(Guid childrenId)
         {
             var result = await _childService.DeleteChildAsync(childrenId);

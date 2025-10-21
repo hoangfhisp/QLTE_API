@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Backend_QLTE.ChildService;
+using Backend_QLTE.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -130,7 +131,7 @@ app.UseUserService();
 app.UseChildService();
 // ✅ (tùy chọn) Nếu có pipeline cho ChildService, thêm ở đây
 // app.UseChildService();
-
+app.MapHub<LocationHub>("/locationHub");
 app.MapControllers();
 
 // ✅ (nếu có ChatHub, bật lại dòng dưới)

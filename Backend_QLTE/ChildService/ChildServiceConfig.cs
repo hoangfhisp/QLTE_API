@@ -16,6 +16,7 @@ namespace Backend_QLTE.ChildService
              * ----------------------------------------- */
             services.AddScoped<IChildService,Application.Services.ChildService>();
             services.AddScoped<IZoneService,Application.Services.ZoneService>();
+            services.AddScoped<ILocationService, Application.Services.LocationSerivce>();
             /* -----------------------------------------
              * INFRASTRUCTURE LAYER
              * ----------------------------------------- */
