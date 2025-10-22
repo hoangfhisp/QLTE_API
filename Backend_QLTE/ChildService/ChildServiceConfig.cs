@@ -28,6 +28,9 @@ namespace Backend_QLTE.ChildService
             services.AddScoped<IStudyPeriodService, StudyPeriodService>();
             services.AddScoped<ISOSRequestService, SOSRequestService>();
             services.AddScoped<IDeviceInfoService, DeviceInfoService>();
+            services.AddScoped<IChildService, Application.Services.ChildService>();
+            services.AddScoped<IZoneService, Application.Services.ZoneService>();
+            services.AddScoped<ILocationService, Application.Services.LocationSerivce>();
 
             // FACTORIES
             services.AddScoped<IStudyPeriodFactory, StudyPeriodFactory>();
