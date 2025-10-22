@@ -5,6 +5,7 @@ using Backend_QLTE.ChildService.Domain.Exceptions.NotFounds;
 using Backend_QLTE.ChildService.Domain.Exceptions;
 using Backend_QLTE.ChildService.Shared.Exceptions;
 using System.Net;
+using Backend_QLTE.ChildService.Domain.Entities;
 //using Backend_QLTE.ChildService.Domain.Exceptions.Unauthorized;
 
 namespace Backend_QLTE.ChildService.Api.Middlewares
@@ -22,17 +23,29 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
 
         private static readonly Dictionary<Type, int> ExceptionStatusMap = new()
         {
-            //// Pet
-            //{ typeof(DuplicatePetException), StatusCodes.Status500InternalServerError },
-            //{ typeof(PetFailedException), StatusCodes.Status500InternalServerError },
-            //{ typeof(InvalidPetException), StatusCodes.Status500InternalServerError },
-            //{ typeof(PetNotFoundException), StatusCodes.Status500InternalServerError },
-
             // StudyPrediost
             { typeof(DuplicateStudyPeriodException), StatusCodes.Status400BadRequest },
             { typeof(StudyPeriodFailedException), StatusCodes.Status500InternalServerError },
             { typeof(InvalidStudyPeriodException), StatusCodes.Status400BadRequest },
             { typeof(StudyPeriodNotFoundException), StatusCodes.Status404NotFound },
+
+            // SOSRequest
+            { typeof(DuplicateSOSRequestException), StatusCodes.Status400BadRequest },
+            { typeof(SOSRequestFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidSOSRequestException), StatusCodes.Status400BadRequest },
+            { typeof(SOSRequestNotFoundException), StatusCodes.Status404NotFound },
+
+            // DeviceInfo
+            { typeof(DuplicateDeviceInfoException), StatusCodes.Status400BadRequest },
+            { typeof(DeviceInfoFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidDeviceInfoException), StatusCodes.Status400BadRequest },
+            { typeof(DeviceInfoNotFoundException), StatusCodes.Status404NotFound },
+
+            // Child
+            { typeof(DuplicateChildException), StatusCodes.Status400BadRequest },
+            { typeof(ChildFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidChildException), StatusCodes.Status400BadRequest },
+            { typeof(ChildNotFoundException), StatusCodes.Status404NotFound },
 
         };
 
@@ -41,8 +54,10 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
             if (!context.Request.Path.StartsWithSegments("/api/Child") &&
                 !context.Request.Path.StartsWithSegments("/api/DangerZone") &&
                 !context.Request.Path.StartsWithSegments("/api/SafeZone") &&
-                !context.Request.Path.StartsWithSegments("/api/StudyPeriod")
-                )
+                !context.Request.Path.StartsWithSegments("/api/StudyPeriod") &&
+                !context.Request.Path.StartsWithSegments("/api/SOSRequest") &&
+                !context.Request.Path.StartsWithSegments("/api/DeviceInfo")
+                ) 
             {
                 await _next(context);
                 return;

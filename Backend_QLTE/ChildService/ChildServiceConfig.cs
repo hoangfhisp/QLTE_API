@@ -29,15 +29,23 @@ namespace Backend_QLTE.ChildService
             /*-----------------------------------------APPLICATION--------------------------------------------*/
             // SERVICES
             services.AddScoped<IStudyPeriodService, StudyPeriodService>();
+            services.AddScoped<ISOSRequestService, SOSRequestService>();
+            services.AddScoped<IDeviceInfoService, DeviceInfoService>();
 
             // FACTORIES
             services.AddScoped<IStudyPeriodFactory, StudyPeriodFactory>();
+            services.AddScoped<ISOSRequestFactory, SOSRequestFactory>();
+            services.AddScoped<IDeviceInfoFactory, DeviceInfoFactory>();
 
             // MAPPERS
             services.AddScoped<IStudyPeriodResponseMapper, StudyPeriodResponseMapper>();
+            services.AddScoped<ISOSRequestResponseMapper, SOSRequestResponseMapper>();
+            services.AddScoped<IDeviceInfoResponseMapper, DeviceInfoResponseMapper>();
 
             // ORCHESTRATORS
             services.AddScoped<IStudyPeriodOrchestrator, StudyPeriodOrchestrator>();
+            services.AddScoped<ISOSRequestOrchestrator, SOSRequestOrchestrator>();
+            services.AddScoped<IDeviceInfoOrchestrator, DeviceInfoOrchestrator>();
 
             // VALIRATORS
             // Dịch vụ validation chung
@@ -52,6 +60,8 @@ namespace Backend_QLTE.ChildService
             /*-----------------------------------------DOMAIN--------------------------------------------*/
             // DOMAIN SERVICES
             services.AddScoped<IStudyPeriodDomainService, StudyPeriodDomainService>();
+            services.AddScoped<ISOSRequestDomainService, SOSRequestDomainService>();
+            services.AddScoped<IDeviceInfoDomainService, DeviceInfoDomainService>();
 
             //MAPPERS
             services.AddScoped<IPaginationMapper, PaginationMapper>();
@@ -60,7 +70,13 @@ namespace Backend_QLTE.ChildService
             //CONFIG
 
             // HTTP Client
-
+            // HTTP Client
+            services.AddHttpClient<IUserServiceClient, UserServiceClient>("Membership_UserServiceClient", (sp, client) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var userServiceUrl = config["ServiceUrls:UserService"];
+                client.BaseAddress = new Uri(userServiceUrl);
+            });
 
             // Configure database contexts
             services.AddDbContext<ChildDbContext>(options =>
@@ -68,6 +84,9 @@ namespace Backend_QLTE.ChildService
 
             // REPOSITORIES
             services.AddScoped<IStudyPeriodRepository, StudyPeriodRepository>();
+            services.AddScoped<ISOSRequestRepository, SOSRequestRepository>();
+            services.AddScoped<IChildRepository, ChildRepository>();
+            services.AddScoped<IDeviceInfoRepository, DeviceInfoRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>(); // Unit of Work
             return services;

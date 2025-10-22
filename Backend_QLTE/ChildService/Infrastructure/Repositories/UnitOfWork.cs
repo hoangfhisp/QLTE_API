@@ -10,13 +10,22 @@ namespace Backend_QLTE.ChildService.Infrastructure.Repositories
         public UnitOfWork
         (
             ChildDbContext context,
-            IStudyPeriodRepository studyPeriod)
+            IStudyPeriodRepository studyPeriod,
+            ISOSRequestRepository sOSRequest,
+            IDeviceInfoRepository deviceInfo,
+            IChildRepository child)
         {
             _context = context;
             StudyPeriods = studyPeriod;
+            SOSRequests = sOSRequest;
+            DeviceInfos = deviceInfo;
+            Childs = child;
         }
 
         public IStudyPeriodRepository StudyPeriods { get; }
+        public ISOSRequestRepository SOSRequests { get;  }
+        public IDeviceInfoRepository DeviceInfos { get; }
+        public IChildRepository Childs { get; }
 
         public async Task<IEfTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

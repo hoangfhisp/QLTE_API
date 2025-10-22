@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Backend_QLTE.ChildService;
+using Backend_QLTE.ChildService.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -50,10 +51,13 @@ builder.Services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.Authenticatio
         {
             var accessToken = context.Request.Query["access_token"];
             var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/chatHub") || path.StartsWithSegments("/sosHub")))
             {
                 context.Token = accessToken;
             }
+
             return Task.CompletedTask;
         }
     };
@@ -129,5 +133,7 @@ app.MapControllers();
 
 // ✅ (nếu có ChatHub, bật lại dòng dưới)
 // app.MapHub<ChatHub>("/chatHub");
+app.MapHub<SOSHub>("/sosHub");
+
 
 app.Run();

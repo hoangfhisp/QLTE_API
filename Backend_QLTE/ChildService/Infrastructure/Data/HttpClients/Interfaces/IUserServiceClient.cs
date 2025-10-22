@@ -5,6 +5,6 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.HttpClients.Interfaces
 {
     public interface IUserServiceClient
     {
-        
+        Task<ApiResponse<ResultDTO<UserHttpResponseDTO>>?> FindUserByUserIdAsync(string userId, CancellationToken cancellationToken = default);
     }
 }
