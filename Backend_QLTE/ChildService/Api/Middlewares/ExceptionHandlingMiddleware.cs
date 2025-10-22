@@ -6,6 +6,7 @@ using Backend_QLTE.ChildService.Domain.Exceptions;
 using Backend_QLTE.ChildService.Shared.Exceptions;
 using System.Net;
 using Backend_QLTE.ChildService.Domain.Entities;
+using Backend_QLTE.ChildService.shared.Exceptions;
 //using Backend_QLTE.ChildService.Domain.Exceptions.Unauthorized;
 
 namespace Backend_QLTE.ChildService.Api.Middlewares

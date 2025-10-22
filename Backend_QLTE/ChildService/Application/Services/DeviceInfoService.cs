@@ -46,7 +46,7 @@ namespace Backend_QLTE.ChildService.Application.Services
         }
 
         // 🟢 Lấy tất cả thiết bị
-        public async Task<ResultListDTO<List<DeviceInfoResponseDTO>>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
+        public async Task<ResultListDTO<DeviceInfoResponseDTO>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
         {
             var (entities, total, last) = await _unitOfWork.DeviceInfos.GetAllAsync(page, limit, cancellationToken);
             if (total == 0)
@@ -54,7 +54,7 @@ namespace Backend_QLTE.ChildService.Application.Services
 
             var dtoList = _mapper.ToDtoList(entities);
             var pagination = _paginationMapper.ToDto(page, limit, total, last);
-            return ResultListDTO<List<DeviceInfoResponseDTO>>.Success(dtoList, "Lấy danh sách thiết bị thành công", pagination);
+            return ResultListDTO<DeviceInfoResponseDTO>.Success(dtoList, "Lấy danh sách thiết bị thành công", pagination);
         }
 
         // 🔵 Lấy chi tiết
@@ -68,14 +68,21 @@ namespace Backend_QLTE.ChildService.Application.Services
         }
 
         // 🟡 Lấy thiết bị theo ChildId
-        public async Task<ResultListDTO<List<DeviceInfoResponseDTO>>> GetByChildAsync(Guid childId, CancellationToken cancellationToken = default)
+        public async Task<ResultDTO<DeviceInfoResponseDTO>> GetByChildAsync(Guid childId, CancellationToken cancellationToken = default)
         {
             var entity = await _unitOfWork.DeviceInfos.GetByChildIdAsync(childId, cancellationToken);
             if (entity == null)
                 throw new DeviceInfoNotFoundException();
 
-            var dto = _mapper.ToDto(entity);
-            return ResultListDTO<List<DeviceInfoResponseDTO>>.Success(new List<DeviceInfoResponseDTO> { dto }, "Lấy thiết bị theo trẻ thành công");
+            var dto = new DeviceInfoResponseDTO {
+            DeviceId = entity.DeviceId,
+            ChildId = entity.ChildId,
+            IMEI = entity.IMEI,
+            LanCapNhatCuoi = entity.LanCapNhatCuoi,
+            Pin = entity.Pin,
+            TenThietBi = entity.TenThietBi,
+            TrangThaiOnline = entity.TrangThaiOnline};
+            return ResultDTO<DeviceInfoResponseDTO>.Success(dto ,"Lấy thiết bị theo trẻ thành công");
         }
 
         // 🟢 Tạo mới

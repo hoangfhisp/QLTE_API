@@ -34,7 +34,7 @@ namespace Backend_QLTE.ChildService.Application.Services
         }
 
         // 🟢 Lấy danh sách có phân trang
-        public async Task<ResultListDTO<List<StudyPeriodResponseDTO>>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
+        public async Task<ResultListDTO<StudyPeriodResponseDTO>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Service: GetAllAsync với trang {Page}, giới hạn {Limit}", page, limit);
 
@@ -48,7 +48,7 @@ namespace Backend_QLTE.ChildService.Application.Services
             var dtoList = _mapper.ToDtoList(entities);
             var pagination = _paginationMapper.ToDto(page, limit, total, last);
 
-            return ResultListDTO<List<StudyPeriodResponseDTO>>.Success(dtoList, "Lấy danh sách StudyPeriod thành công", pagination);
+            return ResultListDTO<StudyPeriodResponseDTO>.Success(dtoList, "Lấy danh sách StudyPeriod thành công", pagination);
         }
 
         // 🔵 Lấy chi tiết theo Id
@@ -67,7 +67,7 @@ namespace Backend_QLTE.ChildService.Application.Services
             return ResultDTO<StudyPeriodResponseDTO>.Success(dto, "Lấy chi tiết StudyPeriod thành công");
         }
 
-        public async Task<ResultListDTO<List<StudyPeriodResponseDTO>>> GetAllStudyPeriodsByChildAsync(Guid childId, int page, int limit, CancellationToken cancellationToken = default)
+        public async Task<ResultListDTO<StudyPeriodResponseDTO>> GetAllStudyPeriodsByChildAsync(Guid childId, int page, int limit, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Service: GetAllStudyPeriodsByChildAsync với ChildId={ChildId}", childId);
 
@@ -81,7 +81,7 @@ namespace Backend_QLTE.ChildService.Application.Services
             var dtoList = _mapper.ToDtoList(entities);
             var pagination = _paginationMapper.ToDto(page, limit, total, last);
 
-            return ResultListDTO<List<StudyPeriodResponseDTO>>.Success(dtoList, "Lấy danh sách khung giờ học theo trẻ thành công", pagination);
+            return ResultListDTO<StudyPeriodResponseDTO>.Success(dtoList, "Lấy danh sách khung giờ học theo trẻ thành công", pagination);
         }
 
         // 🟡 Tạo mới

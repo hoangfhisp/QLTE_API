@@ -6,7 +6,7 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Services
     public interface IDeviceInfoService
     {
         // 🟢 Lấy danh sách thiết bị (phân trang)
-        Task<ResultListDTO<List<DeviceInfoResponseDTO>>> GetAllAsync(
+        Task<ResultListDTO<DeviceInfoResponseDTO>> GetAllAsync(
             int page, int limit, CancellationToken cancellationToken = default);
 
         // 🔵 Lấy chi tiết thiết bị
@@ -14,7 +14,7 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Services
             Guid deviceId, CancellationToken cancellationToken = default);
 
         // 🟡 Lấy thiết bị theo trẻ (ChildId)
-        Task<ResultListDTO<List<DeviceInfoResponseDTO>>> GetByChildAsync(
+        Task<ResultDTO<DeviceInfoResponseDTO>> GetByChildAsync(
             Guid childId, CancellationToken cancellationToken = default);
 
         // 🟢 Tạo mới thiết bị

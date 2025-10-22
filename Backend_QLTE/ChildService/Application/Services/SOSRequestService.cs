@@ -7,8 +7,8 @@ using Backend_QLTE.ChildService.Application.Interfaces.Mappers;
 using Backend_QLTE.ChildService.Application.Interfaces.Orchestrators;
 using Backend_QLTE.ChildService.Application.Interfaces.Repositories;
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
-using Backend_QLTE.ChildService.Api.Hubs; // ✅ thêm Hub namespace
-using Microsoft.AspNetCore.SignalR;       // ✅ dùng cho IHubContext
+using Backend_QLTE.ChildService.Api.Hubs; 
+using Microsoft.AspNetCore.SignalR;       
 using Microsoft.Extensions.Logging;
 
 namespace Backend_QLTE.ChildService.Application.Services
@@ -39,7 +39,7 @@ namespace Backend_QLTE.ChildService.Application.Services
         }
 
         // 🟢 Lấy tất cả SOSRequests
-        public async Task<ResultListDTO<List<SOSRequestResponseDTO>>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
+        public async Task<ResultListDTO<SOSRequestResponseDTO>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Service: GetAllAsync SOSRequest với page={Page}, limit={Limit}", page, limit);
 
@@ -52,7 +52,7 @@ namespace Backend_QLTE.ChildService.Application.Services
 
             var dtoList = _mapper.ToDtoList(entities);
             var pagination = _paginationMapper.ToDto(page, limit, total, last);
-            return ResultListDTO<List<SOSRequestResponseDTO>>.Success(dtoList, "Lấy danh sách SOSRequest thành công", pagination);
+            return ResultListDTO<SOSRequestResponseDTO>.Success(dtoList, "Lấy danh sách SOSRequest thành công", pagination);
         }
 
         // 🔵 Lấy chi tiết theo Id
@@ -72,7 +72,7 @@ namespace Backend_QLTE.ChildService.Application.Services
         }
 
         // 🟡 Lấy danh sách theo ChildId
-        public async Task<ResultListDTO<List<SOSRequestResponseDTO>>> GetByChildAsync(Guid childId, int page, int limit, CancellationToken cancellationToken = default)
+        public async Task<ResultListDTO<SOSRequestResponseDTO>> GetByChildAsync(Guid childId, int page, int limit, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Service: GetByChildAsync SOS cho ChildId={ChildId}", childId);
 
@@ -85,7 +85,7 @@ namespace Backend_QLTE.ChildService.Application.Services
 
             var dtoList = _mapper.ToDtoList(entities);
             var pagination = _paginationMapper.ToDto(page, limit, total, last);
-            return ResultListDTO<List<SOSRequestResponseDTO>>.Success(dtoList, "Lấy danh sách SOS theo trẻ thành công", pagination);
+            return ResultListDTO<SOSRequestResponseDTO>.Success(dtoList, "Lấy danh sách SOS theo trẻ thành công", pagination);
         }
 
         // 🟢 Tạo mới (Realtime)
