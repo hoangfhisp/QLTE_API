@@ -17,6 +17,9 @@ namespace Backend_QLTE.ChildService.Domain.Entities
         public double ViDo { get; set; }
         public double KinhDo { get; set; }
         public double BanKinh { get; set; }
+        [ForeignKey(nameof(Child))]
+        public Guid? ChildrenId { get; set; }
+        public Child Child { get; set; }
     }
 
 }

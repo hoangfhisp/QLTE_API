@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
 using Backend_QLTE.ChildService.Infrastructure.Data;
+using Backend_QLTE.ChildService.Application.Interfaces.Services;
+using Backend_QLTE.ChildService.Api.Middlewares;
 
 namespace Backend_QLTE.ChildService
 {
@@ -11,6 +10,13 @@ namespace Backend_QLTE.ChildService
         // Đăng ký DI cho toàn bộ tầng Application + Domain + Infrastructure
         public static IServiceCollection AddChildService(this IServiceCollection services, IConfiguration config)
         {
+
+            /* -----------------------------------------
+             * APPLICATION
+             * ----------------------------------------- */
+            services.AddScoped<IChildService,Application.Services.ChildService>();
+            services.AddScoped<IZoneService,Application.Services.ZoneService>();
+            services.AddScoped<ILocationService, Application.Services.LocationSerivce>();
             /* -----------------------------------------
              * INFRASTRUCTURE LAYER
              * ----------------------------------------- */
@@ -33,7 +39,7 @@ namespace Backend_QLTE.ChildService
         public static IApplicationBuilder UseChildService(this IApplicationBuilder app)
         {
             // Nếu sau này bạn có middleware riêng (exception handler, logger, v.v.)
-            // app.UseMiddleware<ChildExceptionMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             return app;
         }
     }
