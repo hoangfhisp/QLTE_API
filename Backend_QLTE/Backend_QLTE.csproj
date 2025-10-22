@@ -47,7 +47,6 @@
     <Folder Include="ChildService\Domain\Exceptions\Invalid\" />
     <Folder Include="ChildService\Domain\Exceptions\NotFounds\" />
     <Folder Include="ChildService\Domain\Exceptions\Unauthorized\" />
-    <Folder Include="ChildService\Domain\Services\Interfaces\" />
     <Folder Include="ChildService\Infrastructure\Data\Configurations\" />
     <Folder Include="ChildService\Infrastructure\Data\Migrations\" />
     <Folder Include="ChildService\Infrastructure\Repositories\" />
