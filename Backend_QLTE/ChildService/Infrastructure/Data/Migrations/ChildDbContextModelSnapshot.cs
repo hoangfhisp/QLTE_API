@@ -169,6 +169,12 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTracking")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LanCapNhatCuoi")
                         .HasColumnType("datetime2");
 
@@ -442,6 +448,15 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.SafeZone", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildrenId");
 
                     b.Navigation("Child");
                 });

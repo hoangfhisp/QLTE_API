@@ -11,5 +11,7 @@ namespace Backend_QLTE.ChildService.Application.DTOs.Client.DeviceInfo
         public int? Pin { get; set; }
         public bool TrangThaiOnline { get; set; }
         public DateTime LanCapNhatCuoi { get; set; }
+        public bool IsTracking { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

@@ -7,9 +7,9 @@ using Backend_QLTE.ChildService.Application.Interfaces.Mappers;
 using Backend_QLTE.ChildService.Application.Interfaces.Orchestrators;
 using Backend_QLTE.ChildService.Application.Interfaces.Repositories;
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
-using Backend_QLTE.ChildService.Api.Hubs; 
-using Microsoft.AspNetCore.SignalR;       
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Backend_QLTE.Hubs;
 
 namespace Backend_QLTE.ChildService.Application.Services
 {
@@ -88,79 +88,62 @@ namespace Backend_QLTE.ChildService.Application.Services
             return ResultListDTO<SOSRequestResponseDTO>.Success(dtoList, "Lấy danh sách SOS theo trẻ thành công", pagination);
         }
 
-        // 🟢 Tạo mới (Realtime)
-        public async Task<ResultDTO> CreateAsync(SOSRequestCreateDTO dto, CancellationToken cancellationToken = default)
+        // 🆘 Tạo mới (Realtime)
+        public async Task<ResultDTO<SOSRequestResponseDTO>> CreateAsync(SOSRequestCreateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Service: Bắt đầu tạo SOSRequest cho ChildId={ChildId}", dto.ChildId);
 
-            // 1️⃣ Kiểm tra trùng yêu cầu đang xử lý
+            // 🔎 Kiểm tra trùng SOS đang xử lý
             var existingRequests = await _unitOfWork.SOSRequests.GetByChildIdAsync(dto.ChildId, cancellationToken);
             if (existingRequests.Any(r => r.TrangThai == "Đang xử lý"))
-            {
-                _logger.LogWarning("Service: Đã có SOSRequest đang xử lý cho ChildId={ChildId}", dto.ChildId);
                 throw new DuplicateSOSRequestException(dto.ChildId, dto.ThoiGian);
-            }
 
-            // 2️⃣ Orchestrator xử lý logic nghiệp vụ
-            var entity = await _orchestrator.CreateAsync(dto, cancellationToken);
+            // 🏗️ Tạo SOSRequest mới thông qua orchestrator
+            var created = await _orchestrator.CreateAsync(dto, cancellationToken);
 
-            // 3️⃣ Ghi DB
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            var result = await _unitOfWork.SOSRequests.CreateAsync(entity, cancellationToken);
-
-            if (result is null)
+            // 🧩 Map sang ResponseDTO
+            var response = new SOSRequestResponseDTO
             {
-                _logger.LogError("Service: Tạo SOSRequest thất bại!");
-                await transaction.RollbackAsync(cancellationToken);
-                throw new CreateSOSRequestFailedException(dto.ChildId);
-            }
+                SOSId = created.SOSId,
+                ChildId = created.ChildId,
+                ThoiGian = created.ThoiGian,
+                ViDo = created.ViDo,
+                KinhDo = created.KinhDo,
+                TrangThai = created.TrangThai
+            };
 
-            await transaction.CommitAsync(cancellationToken);
-
-            // ✅ Phát tín hiệu realtime tới tất cả client (hoặc sau này nhóm user)
-            await _hubContext.Clients.All.SendAsync("ReceiveSOS", new
+            // 🚨 Gửi realtime tới đúng group child
+            await _hubContext.Clients.Group(dto.ChildId.ToString()).SendAsync("ReceiveSOS", new
             {
-                SOSId = result.SOSId,
-                ChildId = dto.ChildId,
-                ViDo = dto.ViDo,
-                KinhDo = dto.KinhDo,
-                TrangThai = result.TrangThai,
-                Message = "🚨 SOS mới được gửi!",
-                Time = DateTime.Now
+                sosId = response.SOSId,
+                childId = response.ChildId,
+                thoiGian = response.ThoiGian,
+                viDo = response.ViDo,
+                kinhDo = response.KinhDo,
+                trangThai = response.TrangThai,
+                message = "🚨 SOS mới được gửi!",
+                time = DateTime.Now
             }, cancellationToken);
 
-            _logger.LogInformation("Service: Tạo SOSRequest thành công và đã gửi realtime tới client");
-            return ResultDTO.Success("Tạo yêu cầu SOS thành công");
+            _logger.LogInformation("Service: Tạo SOSRequest thành công và đã gửi realtime tới group {GroupId}", dto.ChildId);
+
+            return ResultDTO<SOSRequestResponseDTO>.Success(response, "Tạo yêu cầu SOS thành công");
         }
 
         // 🟠 Cập nhật (Realtime)
         public async Task<ResultDTO<SOSRequestResponseDTO>> UpdateAsync(SOSRequestUpdateDTO dto, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Service: Cập nhật SOSRequest Id={Id}", dto.SOSId);
+            var updated = await _orchestrator.UpdateAsync(dto, cancellationToken);
+            var response = _mapper.ToDto(updated);
 
-            var entity = await _orchestrator.UpdateAsync(dto, cancellationToken);
-
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            var result = await _unitOfWork.SOSRequests.UpdateAsync(entity, cancellationToken);
-
-            if (result is null)
+            // 🚨 Gửi realtime tới đúng group child
+            await _hubContext.Clients.Group(updated.ChildId.ToString()).SendAsync("SOSUpdated", new
             {
-                _logger.LogError("Service: Cập nhật SOSRequest thất bại!");
-                await transaction.RollbackAsync(cancellationToken);
-                throw new UpdateSOSRequestFailedException(dto.SOSId);
-            }
-
-            await transaction.CommitAsync(cancellationToken);
-
-            var response = _mapper.ToDto(result);
-
-            // ✅ Gửi realtime cho client về trạng thái cập nhật
-            await _hubContext.Clients.All.SendAsync("SOSUpdated", new
-            {
-                SOSId = result.SOSId,
-                TrangThai = result.TrangThai,
-                Message = "✅ Cập nhật trạng thái SOS thành công",
-                Time = DateTime.Now
+                sosId = updated.SOSId,
+                childId = updated.ChildId,
+                trangThai = updated.TrangThai,
+                message = "✅ Cập nhật trạng thái SOS thành công",
+                time = DateTime.Now
             }, cancellationToken);
 
             return ResultDTO<SOSRequestResponseDTO>.Success(response, "Cập nhật yêu cầu SOS thành công");
@@ -169,22 +152,8 @@ namespace Backend_QLTE.ChildService.Application.Services
         // 🔴 Xóa (Realtime)
         public async Task<ResultDTO> DeleteAsync(SOSRequestDeleteDTO dto, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Service: Xóa SOSRequest Id={Id}", dto.SOSId);
-
-            var entity = await _unitOfWork.SOSRequests.GetByIdAsync(dto.SOSId, cancellationToken);
-            if (entity is null)
-            {
-                _logger.LogWarning("Service: Không tìm thấy SOSRequest để xóa.");
-                throw new SOSRequestNotFoundException(dto.SOSId);
-            }
-
             await _orchestrator.DeleteAsync(dto, cancellationToken);
 
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            await _unitOfWork.SOSRequests.DeleteAsync(entity, cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-
-            // ✅ Thông báo realtime cho client biết SOS đã bị xóa
             await _hubContext.Clients.All.SendAsync("SOSDeleted", new
             {
                 SOSId = dto.SOSId,

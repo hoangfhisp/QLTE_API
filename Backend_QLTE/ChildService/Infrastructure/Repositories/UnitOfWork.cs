@@ -13,19 +13,25 @@ namespace Backend_QLTE.ChildService.Infrastructure.Repositories
             IStudyPeriodRepository studyPeriod,
             ISOSRequestRepository sOSRequest,
             IDeviceInfoRepository deviceInfo,
-            IChildRepository child)
+            IChildRepository child,
+            IScheduleRepository schedules,
+            IExamScheduleRepository examSchedules)
         {
             _context = context;
             StudyPeriods = studyPeriod;
             SOSRequests = sOSRequest;
             DeviceInfos = deviceInfo;
             Childs = child;
+            Schedules = schedules;
+            ExamSchedules = examSchedules;
         }
 
         public IStudyPeriodRepository StudyPeriods { get; }
         public ISOSRequestRepository SOSRequests { get;  }
         public IDeviceInfoRepository DeviceInfos { get; }
         public IChildRepository Childs { get; }
+        public IScheduleRepository Schedules { get; }
+        public IExamScheduleRepository ExamSchedules { get; }
 
         public async Task<IEfTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

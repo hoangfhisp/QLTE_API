@@ -9,5 +9,6 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Services
         Task<ResultDTO> CreateChildAsync(CreateChildRequestDTO request);
         Task<ResultDTO<ChildrenResponseDTO>> UpdateChildAsync(UpdateChildRequestDTO request);
         Task<ResultDTO> DeleteChildAsync(Guid childrenId);
+        Task<ResultDTO<ChildrenResponseDTO>> GetChildByUserIdAsync(string userId);
     }
 }

@@ -18,7 +18,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpGet("GetChildrenByUserId")]
-        [Authorize(Roles = "Parent,Admin")]
+        //[Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> GetChildrenByUserId(string userId)
         {
             var result = await _childService.GetChildrenByUserIdAsync(userId);
@@ -47,6 +47,14 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         public async Task<IActionResult> DeleteChild(Guid childrenId)
         {
             var result = await _childService.DeleteChildAsync(childrenId);
+            return Ok(result);
+        }
+
+        [HttpGet("GetChildByUserId")]
+        [Authorize(Roles = "Children,Admin")]
+        public async Task<IActionResult> GetChildByUserId(string userId)
+        {
+            var result = await _childService.GetChildByUserIdAsync(userId);
             return Ok(result);
         }
     }

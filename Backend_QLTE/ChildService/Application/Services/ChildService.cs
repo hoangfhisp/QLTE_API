@@ -255,5 +255,37 @@ namespace Backend_QLTE.ChildService.Application.Services
 
             return ResultDTO.Success($"Xóa childrenId '{childrenId}' thành công!");
         }
+
+        public async Task<ResultDTO<ChildrenResponseDTO>> GetChildByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ApiException("UserId không hợp lệ hoặc bị trống!", 400);
+            }
+
+            // 🔍 Truy vấn child dựa vào UserId của chính trẻ (chính là ChildId)
+            var child = await _childContext.Children
+                .FirstOrDefaultAsync(c => c.ChildId.ToString() == userId);
+
+            if (child == null)
+            {
+                throw new ApiException($"Không tìm thấy child tương ứng với UserId '{userId}'", 404);
+            }
+
+            var result = new ChildrenResponseDTO
+            {
+                ChildId = child.ChildId,
+                HoTen = child.HoTen,
+                GioiTinh = child.GioiTinh,
+                NgaySinh = child.NgaySinh,
+                AnhDaiDien = child.AnhDaiDien,
+                NhomTuoi = child.NhomTuoi,
+                TrangThai = child.TrangThai,
+                UserId = child.UserId, // đây là ParentId
+            };
+
+            return ResultDTO<ChildrenResponseDTO>.Success(result,
+                $"Lấy thông tin child của userId '{userId}' thành công.");
+        }
     }
 }

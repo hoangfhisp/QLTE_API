@@ -16,8 +16,8 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
         private readonly IDeviceInfoFactory _factory;
         private readonly IDeviceInfoDomainService _domainService;
         private readonly IDeviceInfoRepository _repository;
-        private readonly IChildRepository _childRepository; // 🔹 để xác minh Child thuộc User này
-        private readonly IUserServiceClient _userServiceClient; // 🔹 để xác minh phụ huynh tồn tại
+        private readonly IChildRepository _childRepository;
+        private readonly IUserServiceClient _userServiceClient;
         private readonly ILogger<DeviceInfoOrchestrator> _logger;
 
         public DeviceInfoOrchestrator(
@@ -41,35 +41,30 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
         {
             _logger.LogInformation("Orchestrator: Bắt đầu tạo DeviceInfo cho ChildId={ChildId}, UserId={UserId}", dto.ChildId, userId);
 
-            // 1️⃣ Kiểm tra phụ huynh tồn tại qua UserService
             var userResponse = await _userServiceClient.FindUserByUserIdAsync(userId, cancellationToken);
             if (userResponse?.Data == null || !userResponse.Data.Status)
                 throw new KeyNotFoundException($"Không tìm thấy phụ huynh với UserId={userId}");
 
-            // 2️⃣ Xác minh ChildId hợp lệ và thuộc quyền phụ huynh này
             var child = await _childRepository.GetByIdAsync(dto.ChildId, cancellationToken);
             if (child == null)
                 throw new ChildNotFoundException(dto.ChildId.ToString());
             if (child.UserId != userId)
                 throw new UnauthorizedAccessException("Không có quyền thêm thiết bị cho trẻ này.");
 
-            // 3️⃣ Kiểm tra IMEI trùng
             var exists = await _repository.ExistsByIMEIAsync(dto.IMEI, cancellationToken);
             if (exists)
                 throw new DuplicateDeviceInfoException(dto.IMEI);
 
-            // 4️⃣ Tạo entity và validate logic domain
             var entity = _factory.Create(dto);
             _domainService.EnsureCanCreate(entity);
 
-            // 5️⃣ Ghi DB
             var created = await _repository.CreateAsync(entity, cancellationToken);
             _logger.LogInformation("Orchestrator: DeviceInfo {Id} đã được tạo thành công cho ChildId={ChildId}", created.DeviceId, dto.ChildId);
 
             return created;
         }
 
-        // 🟡 Cập nhật
+        // 🟡 Cập nhật DeviceInfo
         public async Task<DeviceInfo> UpdateAsync(DeviceInfoUpdateDTO dto, string userId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Orchestrator: Bắt đầu cập nhật DeviceInfo Id={DeviceId} cho UserId={UserId}", dto.DeviceId, userId);
@@ -78,7 +73,6 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
             if (existing == null)
                 throw new DeviceInfoNotFoundException(dto.DeviceId.ToString());
 
-            // Xác minh quyền sở hữu
             var child = await _childRepository.GetByIdAsync(dto.ChildId, cancellationToken);
             if (child == null)
                 throw new ChildNotFoundException(dto.ChildId.ToString());
@@ -94,7 +88,7 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
             return updated;
         }
 
-        // 🔴 Xóa thiết bị
+        // 🔴 Xóa DeviceInfo
         public async Task DeleteAsync(DeviceInfoDeleteDTO dto, string userId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Orchestrator: Bắt đầu xóa DeviceInfo Id={DeviceId} cho UserId={UserId}", dto.DeviceId, userId);
@@ -103,7 +97,6 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
             if (entity == null)
                 throw new DeviceInfoNotFoundException(dto.DeviceId.ToString());
 
-            // Xác minh quyền phụ huynh
             var child = await _childRepository.GetByIdAsync(entity.ChildId, cancellationToken);
             if (child == null)
                 throw new ChildNotFoundException(entity.ChildId.ToString());
@@ -114,6 +107,52 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
 
             await _repository.DeleteAsync(entity, cancellationToken);
             _logger.LogInformation("Orchestrator: DeviceInfo Id={DeviceId} đã được xóa thành công.", dto.DeviceId);
+        }
+
+        // 🆕 Bật/tắt theo dõi thiết bị (IsTracking)
+        public async Task<bool> SetTrackingStateAsync(Guid childId, bool isTracking, string userId, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Orchestrator: Đặt trạng thái theo dõi={IsTracking} cho ChildId={ChildId}", isTracking, childId);
+
+            var child = await _childRepository.GetByIdAsync(childId, cancellationToken);
+            if (child == null)
+                throw new ChildNotFoundException(childId.ToString());
+            if (child.UserId != userId)
+                throw new UnauthorizedAccessException("Không có quyền thay đổi theo dõi cho trẻ này.");
+
+            var device = await _repository.GetByChildIdAsync(childId, cancellationToken);
+            if (device == null)
+                throw new DeviceInfoNotFoundException($"Không tìm thấy thiết bị của trẻ {childId}");
+
+            device.IsTracking = isTracking;
+            device.LanCapNhatCuoi = DateTime.Now;
+
+            await _repository.UpdateAsync(device, cancellationToken);
+            _logger.LogInformation("Orchestrator: Thiết bị {DeviceId} đã được {Action} theo dõi.",
+                device.DeviceId, isTracking ? "bật" : "tắt");
+
+            return true;
+        }
+
+        // 🆕 Khoá/Mở khoá thiết bị (IsLocked)
+        public async Task<bool> SetLockStateAsync(Guid childId, bool isLocked, string userId, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Orchestrator: Thực hiện {Action} thiết bị của ChildId={ChildId}", isLocked ? "🔒 khoá" : "🔓 mở khoá", childId);
+
+            var child = await _childRepository.GetByIdAsync(childId, cancellationToken);
+            if (child == null)
+                throw new ChildNotFoundException(childId.ToString());
+            if (child.UserId != userId)
+                throw new UnauthorizedAccessException("Không có quyền thay đổi khoá cho trẻ này.");
+
+            var success = await _repository.SetLockStateAsync(childId, isLocked, cancellationToken);
+            if (!success)
+                throw new DeviceInfoNotFoundException($"Không tìm thấy thiết bị của trẻ {childId}");
+
+            _logger.LogInformation("Orchestrator: Thiết bị của ChildId={ChildId} đã được {Action}.",
+                childId, isLocked ? "khoá" : "mở khoá");
+
+            return true;
         }
     }
 }

@@ -23,5 +23,9 @@ namespace Backend_QLTE.ChildService.Application.DTOs.Client.DeviceInfo
 
         [Required(ErrorMessage = "Thiếu thời gian cập nhật cuối.")]
         public DateTime LanCapNhatCuoi { get; set; } = DateTime.Now;
+
+        public bool IsTracking { get; set; } = false;
+        public bool IsLocked { get; set; } = false;
     }
+
 }
