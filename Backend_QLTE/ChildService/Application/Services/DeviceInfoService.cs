@@ -6,7 +6,7 @@ using Backend_QLTE.ChildService.Application.Interfaces.Mappers;
 using Backend_QLTE.ChildService.Application.Interfaces.Orchestrators;
 using Backend_QLTE.ChildService.Application.Interfaces.Repositories;
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
-using Backend_QLTE.ChildService.Api.Hubs;
+using Backend_QLTE.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 

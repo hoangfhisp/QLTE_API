@@ -23,7 +23,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy tất cả thiết bị
         [HttpGet("GetAll")]
-        [Authorize(Roles = "Parent,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetAll(int page = 1, int limit = 10, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API: GetAll DeviceInfo page={Page}, limit={Limit}", page, limit);
@@ -33,7 +33,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🔵 Lấy chi tiết thiết bị
         [HttpGet("Detail/{deviceId}")]
-        [Authorize(Roles = "Parent,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetDetail(Guid deviceId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API: GetDetail DeviceInfo Id={Id}", deviceId);
@@ -43,7 +43,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟡 Lấy thiết bị theo ChildId
         [HttpGet("GetByChild")]
-        [Authorize(Roles = "Parent,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetByChild(Guid childId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API: GetByChild DeviceInfo ChildId={ChildId}", childId);
