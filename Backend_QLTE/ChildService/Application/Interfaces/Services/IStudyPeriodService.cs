@@ -12,5 +12,6 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Services
         Task<ResultDTO<StudyPeriodResponseDTO>> UpdateAsync(StudyPeriodUpdateDTO dto, CancellationToken cancellationToken = default);
         Task<ResultDTO> DeleteAsync(StudyPeriodDeleteDTO dto, CancellationToken cancellationToken = default);
         Task<ResultDTO> ToggleActiveAsync(Guid studyPeriodId, CancellationToken cancellationToken = default);
+        Task<ResultDTO<StudyPeriodResponseDTO>> GetActiveByChildAsync(Guid childId, CancellationToken cancellationToken = default);
     }
 }

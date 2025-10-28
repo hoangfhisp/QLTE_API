@@ -17,7 +17,8 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<StudyPeriod> StudyPeriods { get; set; }
         public DbSet<Schedule> Schedules { get; set; }             
-        public DbSet<ExamSchedule> ExamSchedules { get; set; }  
+        public DbSet<ExamSchedule> ExamSchedules { get; set; }
+        public DbSet<DeviceRestriction> DeviceRestrictions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +52,12 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data
                 .HasMany(c => c.ExamSchedules)
                 .WithOne(es => es.Child)
                 .HasForeignKey(es => es.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DeviceInfo>()
+                .HasMany(d => d.DeviceRestrictions)
+                .WithOne(r => r.Device)
+                .HasForeignKey(r => r.DeviceId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

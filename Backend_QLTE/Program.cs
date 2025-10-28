@@ -134,6 +134,8 @@ app.UseChildService();
 app.MapHub<LocationHub>("/locationHub");
 app.MapHub<SOSHub>("/sosHub");
 app.MapHub<DeviceHub>("/deviceHub");
+app.MapHub<StudyHub>("/studyHub");
+app.MapHub<RestrictionHub>("/restrictionHub");
 
 app.MapControllers();
 

@@ -87,5 +87,18 @@ namespace Backend_QLTE.ChildService.Infrastructure.Repositories
             _context.StudyPeriods.Remove(studyPeriod);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        // 🟣 Lấy khung giờ học đang hoạt động hiện tại của 1 đứa trẻ
+        public async Task<StudyPeriod?> GetActiveByChildAsync(Guid childId, CancellationToken cancellationToken = default)
+        {
+            var now = DateTime.Now.TimeOfDay;
+
+            return await _context.Set<StudyPeriod>()
+                .Where(sp => sp.ChildId == childId
+                             && sp.IsActive
+                             && sp.StartTime <= now
+                             && sp.EndTime >= now)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

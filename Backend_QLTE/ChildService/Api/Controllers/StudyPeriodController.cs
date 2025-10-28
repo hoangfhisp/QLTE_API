@@ -22,7 +22,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy tất cả StudyPeriod theo trẻ (GET)
         [HttpGet("GetAllByChild")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetAllByChild(Guid childId, int page = 1, int limit = 10, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetAll StudyPeriod cho ChildId={ChildId}", childId);
@@ -33,7 +33,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy chi tiết 1 khung giờ học
         [HttpGet("Detail/{studyPeriodId}")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetDetail(Guid studyPeriodId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetDetail StudyPeriod Id={Id}", studyPeriodId);
@@ -44,7 +44,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Tạo mới StudyPeriod (khung giờ học)
         [HttpPost("Create")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Create([FromBody] StudyPeriodCreateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Create StudyPeriod cho ChildId={ChildId}", dto.ChildId);
@@ -55,7 +55,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟡 Cập nhật StudyPeriod
         [HttpPut("Update")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Update([FromBody] StudyPeriodUpdateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Update StudyPeriod Id={Id}", dto.StudyPeriodId);
@@ -66,7 +66,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🔴 Xóa StudyPeriod
         [HttpDelete("Delete")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Delete([FromQuery] StudyPeriodDeleteDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Delete StudyPeriod Id={Id}", dto.StudyPeriodId);
@@ -77,7 +77,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟣 Bật / tắt khung giờ học (toggle IsActive)
         [HttpPatch("ToggleActive")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> ToggleActive(Guid studyPeriodId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: ToggleActive StudyPeriod Id={Id}", studyPeriodId);
@@ -85,5 +85,20 @@ namespace Backend_QLTE.ChildService.Api.Controllers
             _logger.LogInformation("API Response: ToggleActive StudyPeriod Id={Id} Status={Status}", studyPeriodId, result.Status);
             return Ok(result);
         }
+
+        // 🟣 API: Lấy khung giờ học đang hoạt động của 1 đứa trẻ
+        [HttpGet("GetActiveByChild")]
+        [Authorize(Roles = "Parent,Admin,Children")]
+        public async Task<IActionResult> GetActiveByChild(Guid childId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("API Request: GetActiveByChild ChildId={ChildId}", childId);
+
+            var result = await _studyPeriodService.GetActiveByChildAsync(childId, cancellationToken);
+
+            if (!result.Status) return BadRequest(result);
+
+            return Ok(result);
+        }
+
     }
 }

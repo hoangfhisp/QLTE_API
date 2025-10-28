@@ -196,6 +196,45 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.ToTable("DeviceInfos");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceRestriction", b =>
+                {
+                    b.Property<Guid>("RestrictionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AllowedDomains")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("BlockedApps")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BlockedDomains")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsFirewallEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Mode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RestrictionId");
+
+                    b.HasIndex("DeviceId");
+
+                    b.ToTable("DeviceRestrictions");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.ExamSchedule", b =>
                 {
                     b.Property<Guid>("ExamId")
@@ -419,6 +458,17 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("Child");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceRestriction", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", "Device")
+                        .WithMany("DeviceRestrictions")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.ExamSchedule", b =>
                 {
                     b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
@@ -498,6 +548,11 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("StudyPeriods");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", b =>
+                {
+                    b.Navigation("DeviceRestrictions");
                 });
 #pragma warning restore 612, 618
         }
