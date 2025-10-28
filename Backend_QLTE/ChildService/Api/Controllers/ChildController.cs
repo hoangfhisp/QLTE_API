@@ -18,7 +18,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpGet("GetChildrenByUserId")]
-        //[Authorize(Roles = "Parent,Admin")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> GetChildrenByUserId(string userId)
         {
             var result = await _childService.GetChildrenByUserIdAsync(userId);
@@ -51,7 +51,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
         }
 
         [HttpGet("GetChildByUserId")]
-        [Authorize(Roles = "Children,Admin")]
+        [Authorize(Roles = "Parent,Children,Admin")]
         public async Task<IActionResult> GetChildByUserId(string userId)
         {
             var result = await _childService.GetChildByUserIdAsync(userId);

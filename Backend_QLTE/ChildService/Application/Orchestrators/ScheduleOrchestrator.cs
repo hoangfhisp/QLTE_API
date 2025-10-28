@@ -52,6 +52,7 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
         {
             _logger.LogInformation("Orchestrator: Bắt đầu cập nhật Schedule Id = {Id}", dto.ScheduleId);
 
+            // 🔹 1. Lấy entity hiện có trong DB
             var existing = await _repository.GetByIdAsync(dto.ScheduleId, cancellationToken);
             if (existing == null)
             {
@@ -59,10 +60,16 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
                 throw new KeyNotFoundException($"Không tìm thấy Schedule với Id = {dto.ScheduleId}");
             }
 
+            // 🔹 2. Giữ nguyên ChildId gốc (rất quan trọng)
+            dto.ChildId = existing.ChildId;
+
+            // 🔹 3. Gọi factory build lại entity
             var updatedEntity = _factory.Update(dto);
 
+            // 🔹 4. Domain validation
             _domainService.EnsureCanUpdate(updatedEntity);
 
+            // 🔹 5. Update DB
             var updated = await _repository.UpdateAsync(updatedEntity, cancellationToken);
 
             _logger.LogInformation("Orchestrator: Schedule Id = {Id} đã được cập nhật thành công", dto.ScheduleId);

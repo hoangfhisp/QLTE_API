@@ -7,7 +7,10 @@ using Backend_QLTE.ChildService.Application.Interfaces.Mappers;
 using Backend_QLTE.ChildService.Application.Interfaces.Orchestrators;
 using Backend_QLTE.ChildService.Application.Interfaces.Repositories;
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
+using Backend_QLTE.ChildService.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Backend_QLTE.ChildService.shared.Exceptions;
 
 namespace Backend_QLTE.ChildService.Application.Services
 {
@@ -18,19 +21,22 @@ namespace Backend_QLTE.ChildService.Application.Services
         private readonly IScheduleResponseMapper _mapper;
         private readonly IPaginationMapper _paginationMapper;
         private readonly ILogger<ScheduleService> _logger;
+        private readonly ChildDbContext _childContext;
 
         public ScheduleService(
             IUnitOfWork unitOfWork,
             IScheduleOrchestrator orchestrator,
             IScheduleResponseMapper mapper,
             IPaginationMapper paginationMapper,
-            ILogger<ScheduleService> logger)
+            ILogger<ScheduleService> logger,
+            ChildDbContext childContext)
         {
             _unitOfWork = unitOfWork;
             _orchestrator = orchestrator;
             _mapper = mapper;
             _paginationMapper = paginationMapper;
             _logger = logger;
+            _childContext = childContext;
         }
 
         // 🟢 Lấy danh sách có phân trang
@@ -110,8 +116,21 @@ namespace Backend_QLTE.ChildService.Application.Services
         {
             _logger.LogInformation("Service: Bắt đầu UpdateAsync Schedule Id={Id}", dto.ScheduleId);
 
+            // ✅ 1. Kiểm tra ChildId có tồn tại trong DB không
+            var childExists = await _childContext.Children.AnyAsync(c => c.ChildId == dto.ChildId, cancellationToken);
+            if (!childExists)
+            {
+                _logger.LogWarning("Service: Không tìm thấy ChildId={ChildId}", dto.ChildId);
+                throw new ApiException($"Không tìm thấy trẻ với ChildId = {dto.ChildId}", 404);
+            }
+
+            // ✅ 2. Gọi orchestrator xử lý cập nhật
             var updatedEntity = await _orchestrator.UpdateAsync(dto, cancellationToken);
+
+            // ✅ 3. Map lại DTO kết quả
             var response = _mapper.ToDto(updatedEntity);
+
+            _logger.LogInformation("Service: Cập nhật Schedule Id={Id} thành công", dto.ScheduleId);
 
             return ResultDTO<ScheduleResponseDTO>.Success(response, "Cập nhật Schedule thành công");
         }

@@ -22,7 +22,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy tất cả Schedule theo trẻ (GET)
         [HttpGet("GetAllByChild")]
-        [Authorize(Roles = "User,Admin,Children")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetAllByChild(Guid childId, int page = 1, int limit = 10, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetAll Schedule cho ChildId={ChildId}", childId);
@@ -33,7 +33,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy chi tiết 1 Schedule
         [HttpGet("Detail/{scheduleId}")]
-        [Authorize(Roles = "User,Admin,Children")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> GetDetail(Guid scheduleId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetDetail Schedule Id={Id}", scheduleId);
@@ -44,7 +44,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Tạo mới Schedule (Lịch học)
         [HttpPost("Create")]
-        [Authorize(Roles = "User,Admin,Children")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Create([FromBody] ScheduleCreateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Create Schedule cho ChildId={ChildId}", dto.ChildId);
@@ -55,7 +55,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟡 Cập nhật Schedule
         [HttpPut("Update")]
-        [Authorize(Roles = "User,Admin,Children")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Update([FromBody] ScheduleUpdateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Update Schedule Id={Id}", dto.ScheduleId);
@@ -66,7 +66,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🔴 Xóa Schedule
         [HttpDelete("Delete")]
-        [Authorize(Roles = "User,Admin,Children")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Delete([FromQuery] ScheduleDeleteDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Delete Schedule Id={Id}", dto.ScheduleId);

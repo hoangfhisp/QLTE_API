@@ -79,9 +79,24 @@ namespace Backend_QLTE.ChildService.Infrastructure.Repositories
         // 🟡 Cập nhật
         public async Task<Schedule> UpdateAsync(Schedule schedule, CancellationToken cancellationToken = default)
         {
-            _context.Schedules.Update(schedule);
+            // 🔍 Lấy entity hiện tại đang được EF tracking
+            var existing = await _context.Schedules
+                .FirstOrDefaultAsync(x => x.ScheduleId == schedule.ScheduleId, cancellationToken);
+
+            if (existing == null)
+                throw new InvalidOperationException($"Không tìm thấy Schedule Id={schedule.ScheduleId}");
+
+            // ✅ Cập nhật từng trường cần thiết
+            existing.TenMonHoc = schedule.TenMonHoc;
+            existing.Thu = schedule.Thu;
+            existing.GioBatDau = schedule.GioBatDau;
+            existing.GioKetThuc = schedule.GioKetThuc;
+            existing.ChildId = schedule.ChildId;
+
+            // ⏰ Lưu thay đổi
             await _context.SaveChangesAsync(cancellationToken);
-            return schedule;
+
+            return existing;
         }
 
         // 🔴 Xóa
