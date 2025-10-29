@@ -11,5 +11,6 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Repositories
         Task<StudyPeriod> CreateAsync(StudyPeriod studyPeriod, CancellationToken cancellationToken = default);
         Task<StudyPeriod> UpdateAsync(StudyPeriod studyPeriod, CancellationToken cancellationToken = default);
         Task DeleteAsync(StudyPeriod studyPeriod, CancellationToken cancellationToken = default);
+        Task<StudyPeriod?> GetActiveByChildAsync(Guid childId, CancellationToken cancellationToken = default);
     }
 }

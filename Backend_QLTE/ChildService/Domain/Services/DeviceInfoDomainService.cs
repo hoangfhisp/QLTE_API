@@ -56,6 +56,17 @@ namespace Backend_QLTE.ChildService.Domain.Services
 
             if (deviceInfo.LanCapNhatCuoi > DateTime.Now.AddMinutes(2))
                 throw new InvalidDeviceInfoException("Thời gian cập nhật cuối không thể ở tương lai.");
+
+            // ⚡ Logic mới cho IsTracking & IsLocked
+            if (deviceInfo.IsLocked && deviceInfo.IsTracking)
+                throw new InvalidDeviceInfoException("Thiết bị không thể vừa bị khóa vừa trong trạng thái theo dõi.");
+
+            if (!deviceInfo.IsTracking && !deviceInfo.IsLocked)
+            {
+                // Đây là trạng thái "trung tính", có thể cảnh báo hoặc cho phép tùy nghiệp vụ
+                // Chúng ta chỉ log cảnh báo chứ không throw error
+                Console.WriteLine("⚠️ Cảnh báo: Thiết bị đang ở trạng thái không theo dõi và không bị khóa.");
+            }
         }
     }
 }

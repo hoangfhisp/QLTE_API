@@ -12,5 +12,7 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Repositories
         Task<DeviceInfo> CreateAsync(DeviceInfo deviceInfo, CancellationToken cancellationToken = default);
         Task<DeviceInfo> UpdateAsync(DeviceInfo deviceInfo, CancellationToken cancellationToken = default);
         Task DeleteAsync(DeviceInfo deviceInfo, CancellationToken cancellationToken = default);
+        Task<List<DeviceInfo>> GetTrackingDevicesAsync(CancellationToken cancellationToken = default);
+        Task<bool> SetLockStateAsync(Guid childId, bool isLocked, CancellationToken cancellationToken = default);
     }
 }

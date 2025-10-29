@@ -2,6 +2,8 @@
 using Backend_QLTE.ChildService.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Backend_QLTE.Hubs;                
+using Microsoft.AspNetCore.SignalR;
 
 namespace Backend_QLTE.ChildService.Api.Controllers
 {
@@ -11,13 +13,16 @@ namespace Backend_QLTE.ChildService.Api.Controllers
     {
         private readonly ISOSRequestService _sosRequestService;
         private readonly ILogger<SOSRequestController> _logger;
+        private readonly IHubContext<SOSHub> _hubContext;
 
         public SOSRequestController(
             ILogger<SOSRequestController> logger,
-            ISOSRequestService sosRequestService)
+            ISOSRequestService sosRequestService,
+            IHubContext<SOSHub> hubContext)
         {
             _logger = logger;
             _sosRequestService = sosRequestService;
+            _hubContext = hubContext;
         }
 
         // 🟢 Lấy tất cả SOSRequest (GET)
@@ -33,7 +38,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Lấy danh sách SOSRequest theo trẻ (GET)
         [HttpGet("GetByChild")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> GetByChild(Guid childId, int page = 1, int limit = 10, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetByChild SOSRequest ChildId={ChildId}", childId);
@@ -44,7 +49,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🔵 Lấy chi tiết 1 yêu cầu SOS
         [HttpGet("Detail/{sosId}")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin")]
         public async Task<IActionResult> GetDetail(Guid sosId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: GetDetail SOSRequest Id={Id}", sosId);
@@ -55,18 +60,37 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🟢 Tạo mới SOSRequest
         [HttpPost("Create")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Create([FromBody] SOSRequestCreateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Create SOSRequest ChildId={ChildId}", dto.ChildId);
             var result = await _sosRequestService.CreateAsync(dto, cancellationToken);
             _logger.LogInformation("API Response: Create SOSRequest ChildId={ChildId} Status={Status}", dto.ChildId, result.Status);
+
+            // ✅ Nếu tạo thành công → broadcast tới nhóm childId
+            if (result.Status && result.Data != null)
+            {
+                var sos = result.Data; // thường là SOSResponseDTO hoặc SOSRequest entity
+
+                await _hubContext.Clients.Group(dto.ChildId.ToString()).SendAsync("ReceiveSOS", new
+                {
+                    sosId = sos.SOSId,
+                    childId = sos.ChildId,
+                    thoiGian = sos.ThoiGian,
+                    viDo = sos.ViDo,
+                    kinhDo = sos.KinhDo,
+                    trangThai = sos.TrangThai
+                });
+
+                _logger.LogInformation("🚨 SOS realtime sent to group {GroupId}", dto.ChildId);
+            }
+
             return Ok(result);
         }
 
         // 🟠 Cập nhật SOSRequest
         [HttpPut("Update")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Update([FromBody] SOSRequestUpdateDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Update SOSRequest Id={Id}", dto.SOSId);
@@ -77,7 +101,7 @@ namespace Backend_QLTE.ChildService.Api.Controllers
 
         // 🔴 Xóa SOSRequest
         [HttpDelete("Delete")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Parent,Admin,Children")]
         public async Task<IActionResult> Delete([FromQuery] SOSRequestDeleteDTO dto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Request: Delete SOSRequest Id={Id}", dto.SOSId);

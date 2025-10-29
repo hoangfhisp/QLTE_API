@@ -48,6 +48,18 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
             { typeof(InvalidChildException), StatusCodes.Status400BadRequest },
             { typeof(ChildNotFoundException), StatusCodes.Status404NotFound },
 
+            // Schedule
+            { typeof(DuplicateScheduleException), StatusCodes.Status400BadRequest },
+            { typeof(ScheduleFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidScheduleException), StatusCodes.Status400BadRequest },
+            { typeof(ScheduleNotFoundException), StatusCodes.Status404NotFound },
+
+            // ExamSchedule
+            { typeof(DuplicateExamScheduleException), StatusCodes.Status400BadRequest },
+            { typeof(ExamScheduleFailedException), StatusCodes.Status500InternalServerError },
+            { typeof(InvalidExamScheduleException), StatusCodes.Status400BadRequest },
+            { typeof(ExamScheduleNotFoundException), StatusCodes.Status404NotFound },
+
         };
 
         public async Task InvokeAsync(HttpContext context)
@@ -58,7 +70,9 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
                 !context.Request.Path.StartsWithSegments("/api/SafeZone") &&
                 !context.Request.Path.StartsWithSegments("/api/StudyPeriod") &&
                 !context.Request.Path.StartsWithSegments("/api/SOSRequest") &&
-                !context.Request.Path.StartsWithSegments("/api/DeviceInfo")
+                !context.Request.Path.StartsWithSegments("/api/DeviceInfo") &&
+                !context.Request.Path.StartsWithSegments("/api/Schedule") &&
+                !context.Request.Path.StartsWithSegments("/api/ExamSchedule") 
                 ) 
             {
                 await _next(context);

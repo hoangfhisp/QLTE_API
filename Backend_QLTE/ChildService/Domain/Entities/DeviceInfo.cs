@@ -24,6 +24,9 @@ namespace Backend_QLTE.ChildService.Domain.Entities
         public bool TrangThaiOnline { get; set; }
 
         public DateTime LanCapNhatCuoi { get; set; }
+        public bool IsTracking { get; set; } = false;
+        public bool IsLocked { get; set; } = false;
+        public ICollection<DeviceRestriction> DeviceRestrictions { get; set; } = new List<DeviceRestriction>();
     }
 
 }

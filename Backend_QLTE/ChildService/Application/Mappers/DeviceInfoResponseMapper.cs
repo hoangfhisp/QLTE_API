@@ -17,7 +17,9 @@ namespace Backend_QLTE.ChildService.Application.Mappers
                 IMEI = entity.IMEI ?? string.Empty,
                 Pin = entity.Pin,
                 TrangThaiOnline = entity.TrangThaiOnline,
-                LanCapNhatCuoi = entity.LanCapNhatCuoi
+                LanCapNhatCuoi = entity.LanCapNhatCuoi,
+                IsTracking = entity.IsTracking,
+                IsLocked = entity.IsLocked
             };
         }
 
@@ -38,7 +40,9 @@ namespace Backend_QLTE.ChildService.Application.Mappers
                 IMEI = entity.IMEI ?? string.Empty,
                 Pin = entity.Pin,
                 TrangThaiOnline = entity.TrangThaiOnline,
-                LanCapNhatCuoi = entity.LanCapNhatCuoi
+                LanCapNhatCuoi = entity.LanCapNhatCuoi,
+                IsTracking = entity.IsTracking,
+                IsLocked = entity.IsLocked
             };
         }
 

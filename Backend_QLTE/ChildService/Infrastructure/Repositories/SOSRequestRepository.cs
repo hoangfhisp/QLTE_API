@@ -76,7 +76,6 @@ namespace Backend_QLTE.ChildService.Infrastructure.Repositories
         // 🟡 Cập nhật
         public async Task<SOSRequest> UpdateAsync(SOSRequest sosRequest, CancellationToken cancellationToken = default)
         {
-            _context.SOSRequests.Update(sosRequest);
             await _context.SaveChangesAsync(cancellationToken);
             return sosRequest;
         }

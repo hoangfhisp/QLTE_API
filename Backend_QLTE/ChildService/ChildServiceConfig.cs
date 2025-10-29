@@ -32,20 +32,30 @@ namespace Backend_QLTE.ChildService
             services.AddScoped<IZoneService, Application.Services.ZoneService>();
             services.AddScoped<ILocationService, Application.Services.LocationSerivce>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IScheduleService, ScheduleService>();
+            services.AddScoped<IExamScheduleService, ExamScheduleService>();
+            services.AddScoped<IDeviceRestrictionService, DeviceRestrictionService>();
+
             // FACTORIES
             services.AddScoped<IStudyPeriodFactory, StudyPeriodFactory>();
             services.AddScoped<ISOSRequestFactory, SOSRequestFactory>();
             services.AddScoped<IDeviceInfoFactory, DeviceInfoFactory>();
+            services.AddScoped<IScheduleFactory, ScheduleFactory>();
+            services.AddScoped<IExamScheduleFactory, ExamScheduleFactory>();
 
             // MAPPERS
             services.AddScoped<IStudyPeriodResponseMapper, StudyPeriodResponseMapper>();
             services.AddScoped<ISOSRequestResponseMapper, SOSRequestResponseMapper>();
             services.AddScoped<IDeviceInfoResponseMapper, DeviceInfoResponseMapper>();
+            services.AddScoped<IScheduleResponseMapper, ScheduleResponseMapper>();
+            services.AddScoped<IExamScheduleResponseMapper, ExamScheduleResponseMapper>();
 
             // ORCHESTRATORS
             services.AddScoped<IStudyPeriodOrchestrator, StudyPeriodOrchestrator>();
             services.AddScoped<ISOSRequestOrchestrator, SOSRequestOrchestrator>();
             services.AddScoped<IDeviceInfoOrchestrator, DeviceInfoOrchestrator>();
+            services.AddScoped<IScheduleOrchestrator, ScheduleOrchestrator>();
+            services.AddScoped<IExamScheduleOrchestrator, ExamScheduleOrchestrator>();
 
             // VALIRATORS
             // Dịch vụ validation chung
@@ -62,6 +72,8 @@ namespace Backend_QLTE.ChildService
             services.AddScoped<IStudyPeriodDomainService, StudyPeriodDomainService>();
             services.AddScoped<ISOSRequestDomainService, SOSRequestDomainService>();
             services.AddScoped<IDeviceInfoDomainService, DeviceInfoDomainService>();
+            services.AddScoped<IScheduleDomainService, ScheduleDomainService>();
+            services.AddScoped<IExamScheduleDomainService, ExamScheduleDomainService>();
 
             //MAPPERS
             services.AddScoped<IPaginationMapper, PaginationMapper>();
@@ -87,6 +99,8 @@ namespace Backend_QLTE.ChildService
             services.AddScoped<ISOSRequestRepository, SOSRequestRepository>();
             services.AddScoped<IChildRepository, ChildRepository>();
             services.AddScoped<IDeviceInfoRepository, DeviceInfoRepository>();
+            services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            services.AddScoped<IExamScheduleRepository, ExamScheduleRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>(); // Unit of Work
             return services;

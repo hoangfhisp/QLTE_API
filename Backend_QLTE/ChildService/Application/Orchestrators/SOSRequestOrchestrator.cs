@@ -61,15 +61,17 @@ namespace Backend_QLTE.ChildService.Application.Orchestrators
                 throw new KeyNotFoundException($"Không tìm thấy SOSRequest với Id = {dto.SOSId}");
             }
 
-            var updatedEntity = _factory.Update(dto);
+            // 🧠 Chỉ update trên entity đang được tracking
+            existing.TrangThai = dto.TrangThai;
+            existing.ThoiGian = DateTime.UtcNow; // hoặc giữ nguyên nếu không cần
+                                                 // nếu có thể cập nhật thêm ViDo, KinhDo thì thêm ở đây
 
-            _domainService.EnsureCanUpdate(updatedEntity);
+            _domainService.EnsureCanUpdate(existing);
 
-            var updated = await _repository.UpdateAsync(updatedEntity, cancellationToken);
+            await _repository.UpdateAsync(existing, cancellationToken);
 
             _logger.LogInformation("Orchestrator: SOSRequest Id = {Id} đã được cập nhật thành công", dto.SOSId);
-
-            return updated;
+            return existing;
         }
 
         // 🔴 Xóa SOSRequest

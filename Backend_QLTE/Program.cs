@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Backend_QLTE.ChildService;
 using Backend_QLTE.Hubs;
-using Backend_QLTE.ChildService.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -132,12 +131,15 @@ app.UseUserService();
 app.UseChildService();
 // ✅ (tùy chọn) Nếu có pipeline cho ChildService, thêm ở đây
 // app.UseChildService();
+app.MapHub<LocationHub>("/locationHub");
+app.MapHub<SOSHub>("/sosHub");
+app.MapHub<DeviceHub>("/deviceHub");
+app.MapHub<StudyHub>("/studyHub");
+app.MapHub<RestrictionHub>("/restrictionHub");
 
 app.MapControllers();
 
 // ✅ (nếu có ChatHub, bật lại dòng dưới)
 app.MapHub<Backend_QLTE.Hubs.ChatHub>("/chatHub");
-app.MapHub<SOSHub>("/sosHub");
-app.MapHub<LocationHub>("/locationHub");
 
 app.Run();

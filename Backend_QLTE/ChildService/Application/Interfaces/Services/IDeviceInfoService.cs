@@ -33,11 +33,16 @@ namespace Backend_QLTE.ChildService.Application.Interfaces.Services
         Task<ResultDTO> UpdateStatusAsync(
             Guid deviceId, int? pin, bool? online, CancellationToken cancellationToken = default);
 
-        // 🧩 Khoá / Mở thiết bị (Realtime Command)
+        // 🔒 Khoá thiết bị (update IsLocked = true + realtime)
         Task<ResultDTO> LockDeviceAsync(
             Guid childId, string userId, CancellationToken cancellationToken = default);
 
+        // 🔓 Mở khoá thiết bị (update IsLocked = false + realtime)
         Task<ResultDTO> UnlockDeviceAsync(
             Guid childId, string userId, CancellationToken cancellationToken = default);
+
+        // 🆕 Bật/tắt theo dõi định kỳ (IsTracking)
+        Task<ResultDTO> SetTrackingStateAsync(
+            Guid childId, bool isTracking, string userId, CancellationToken cancellationToken = default);
     }
 }
