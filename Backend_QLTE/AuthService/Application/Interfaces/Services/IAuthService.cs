@@ -18,5 +18,6 @@ namespace Backend_QLTE.AuthService.Application.Interfaces.Services
         Task<ResultDTO> VerifyOtpForResetPasswordAsync(VerifyOtpEmailResetPasswordRequestDTO request, CancellationToken cancellationToken = default); // Xác thực mã OTP và đặt lại mật khẩu
         Task<ResultDTO> GenerateAndSendOtpChangeEmailAsync(ChangeEmailOtpRequestDTO request, CancellationToken cancellationToken = default); // Gửi mã OTP đến email mới khi đổi email
         Task<ResultDTO> VerifyOtpForChangeEmailAsync(VerifyChangeEmailRequestDTO request, CancellationToken cancellationToken = default); // Xác thực mã OTP và đổi email
+        Task<ResultListDTO<List<RefreshTokenInfoDTO>>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default);
     }
 }

@@ -14,7 +14,9 @@ using Backend_QLTE.AuthService.Application.Interfaces.Services;
 using Backend_QLTE.AuthService.Application.Interfaces.Templates;
 using Backend_QLTE.AuthService.Domain.Interfaces.Services;
 using Backend_QLTE.AuthService.Infrastructure.Data.HttpClients.Interfaces;
+using Backend_QLTE.UserService.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_QLTE.AuthService.Application.Services
 {
@@ -34,6 +36,7 @@ namespace Backend_QLTE.AuthService.Application.Services
         private readonly ITokenFactory _tokenFactory;
         private readonly IHttpUserContextAccessor _httpUserContextAccessor;
         private readonly ILogger<AuthService> _logger;
+        private readonly UserDbContext _userContext;
 
         public AuthService(IAuthOrchestrator authOrchestrator , IAuthDomainService authDomainService
             , IUserServiceClient userServiceClient , IOtpDomainService otpDomainService
@@ -42,7 +45,8 @@ namespace Backend_QLTE.AuthService.Application.Services
             , IEnumerable<IExternalAuthProvider> externalAuthProvider
             , IExternalUserMapper externalUserMapper , IUserHttpMapper userHttpMapper
             , IHttpUserContextAccessor httpUserContextAccessor
-            , ITokenFactory tokenFactory, ILogger<AuthService> logger)
+            , ITokenFactory tokenFactory, ILogger<AuthService> logger
+            , UserDbContext userContext)
         {
             _authOrchestrator = authOrchestrator;
             _authDomainService = authDomainService;
@@ -58,6 +62,7 @@ namespace Backend_QLTE.AuthService.Application.Services
             _tokenFactory = tokenFactory;
             _httpUserContextAccessor = httpUserContextAccessor;
             _logger = logger;
+            _userContext = userContext;
         }
 
         // Đăng nhập và tạo token cho người dùng
@@ -339,5 +344,51 @@ namespace Backend_QLTE.AuthService.Application.Services
             _logger.LogInformation("ApplicationService: thay đổi email thành công cho userId {UserId} với email mới {NewEmail}", userId, request.NewEmail);
             return ResultDTO.Success(result.Msg);
         }
+
+        public async Task<ResultListDTO<List<RefreshTokenInfoDTO>>> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
+        {
+            // 🔹 Lấy danh sách RefreshToken phân trang
+            var (tokens, total, last) = await _unitOfWork.RefreshTokens
+                .GetAllAsync(page, limit, cancellationToken);
+
+            // 🔹 Lấy danh sách UserId duy nhất để join
+            var userIds = tokens.Select(t => t.UserId).Distinct().ToList();
+
+            // 🔹 Join với bảng User để lấy Email
+            var users = await _userContext.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.Email })
+                .ToListAsync(cancellationToken);
+
+            // 🔹 Map entity -> DTO
+            var items = tokens.Select(t =>
+            {
+                var user = users.FirstOrDefault(u => u.Id == t.UserId);
+                return new RefreshTokenInfoDTO
+                {
+                    UserId = t.UserId,
+                    Email = user?.Email ?? "(Không tìm thấy)",
+                    Token = t.Token,
+                    RevokedAt = t.RevokedAt
+                };
+            }).ToList();
+
+            // 🔹 Pagination
+            var pagination = new PaginationDTO
+            {
+                Page = page,
+                Limit = limit,
+                Total = total,
+                Last = last
+            };
+
+            // ✅ Trả kết quả
+            return ResultListDTO<List<RefreshTokenInfoDTO>>.Success(
+                items,
+                "Lấy danh sách RefreshToken thành công!",
+                pagination
+            );
+        }
+
     }
 }
