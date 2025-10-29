@@ -132,13 +132,12 @@ app.UseUserService();
 app.UseChildService();
 // ✅ (tùy chọn) Nếu có pipeline cho ChildService, thêm ở đây
 // app.UseChildService();
-app.MapHub<LocationHub>("/locationHub");
 
 app.MapControllers();
 
 // ✅ (nếu có ChatHub, bật lại dòng dưới)
-// app.MapHub<ChatHub>("/chatHub");
+app.MapHub<Backend_QLTE.Hubs.ChatHub>("/chatHub");
 app.MapHub<SOSHub>("/sosHub");
-
+app.MapHub<LocationHub>("/locationHub");
 
 app.Run();

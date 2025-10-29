@@ -53,6 +53,7 @@ namespace Backend_QLTE.ChildService.Api.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             if (!context.Request.Path.StartsWithSegments("/api/Child") &&
+                !context.Request.Path.StartsWithSegments("/api/Message") &&
                 !context.Request.Path.StartsWithSegments("/api/DangerZone") &&
                 !context.Request.Path.StartsWithSegments("/api/SafeZone") &&
                 !context.Request.Path.StartsWithSegments("/api/StudyPeriod") &&
