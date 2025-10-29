@@ -140,6 +140,6 @@ app.MapHub<RestrictionHub>("/restrictionHub");
 app.MapControllers();
 
 // ✅ (nếu có ChatHub, bật lại dòng dưới)
-// app.MapHub<ChatHub>("/chatHub");
+app.MapHub<Backend_QLTE.Hubs.ChatHub>("/chatHub");
 
 app.Run();

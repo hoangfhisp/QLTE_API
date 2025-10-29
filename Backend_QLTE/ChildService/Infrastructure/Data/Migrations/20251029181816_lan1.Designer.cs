@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ChildDbContext))]
-    [Migration("20251026190138_lan2")]
-    partial class lan2
+    [Migration("20251029181816_lan1")]
+    partial class lan1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

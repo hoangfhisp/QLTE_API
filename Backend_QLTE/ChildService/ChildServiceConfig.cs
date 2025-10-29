@@ -31,6 +31,7 @@ namespace Backend_QLTE.ChildService
             services.AddScoped<IChildService, Application.Services.ChildService>();
             services.AddScoped<IZoneService, Application.Services.ZoneService>();
             services.AddScoped<ILocationService, Application.Services.LocationSerivce>();
+            services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IExamScheduleService, ExamScheduleService>();
             services.AddScoped<IDeviceRestrictionService, DeviceRestrictionService>();
