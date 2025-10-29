@@ -61,6 +61,7 @@ namespace Backend_QLTE.AuthService.Api.Controllers
         }
 
         [HttpPost("UserLogOut")]
+        [Authorize]
         public async Task<IActionResult> UserLogOut(LogOutRequestDTO request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Response: Bắt đầu LogOut");

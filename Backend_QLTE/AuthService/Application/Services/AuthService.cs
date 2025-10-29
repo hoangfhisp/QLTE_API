@@ -14,6 +14,7 @@ using Backend_QLTE.AuthService.Application.Interfaces.Services;
 using Backend_QLTE.AuthService.Application.Interfaces.Templates;
 using Backend_QLTE.AuthService.Domain.Interfaces.Services;
 using Backend_QLTE.AuthService.Infrastructure.Data.HttpClients.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend_QLTE.AuthService.Application.Services
 {

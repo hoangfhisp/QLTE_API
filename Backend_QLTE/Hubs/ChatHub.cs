@@ -97,5 +97,22 @@ namespace Backend_QLTE.Hubs
             await Clients.Group(message.SenderId)
                 .SendAsync("MessageRead", messageId, readerId);
         }
+
+        public async Task SendOffer(string fromUserId, string toUserId, string sdp, string type)
+        {
+            await Clients.Group(toUserId).SendAsync("ReceiveOffer", fromUserId, sdp, type);
+        }
+
+        // Gửi answer
+        public async Task SendAnswer(string fromUserId, string toUserId, string sdp)
+        {
+            await Clients.Group(toUserId).SendAsync("ReceiveAnswer", fromUserId, sdp);
+        }
+
+        // Gửi ICE candidate
+        public async Task SendIce(string fromUserId, string toUserId, object ice)
+        {
+            await Clients.Group(toUserId).SendAsync("ReceiveIceCandidate", fromUserId, ice);
+        }
     }
 }
