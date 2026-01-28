@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ChildDbContext))]
-    [Migration("20251019163904_lan1")]
+    [Migration("20251029181816_lan1")]
     partial class lan1
     {
         /// <inheritdoc />
@@ -131,6 +131,9 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Property<double>("BanKinh")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("ChildrenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("KinhDo")
                         .HasColumnType("float");
 
@@ -151,6 +154,8 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
 
                     b.HasKey("DangerZoneId");
 
+                    b.HasIndex("ChildrenId");
+
                     b.ToTable("DangerZones");
                 });
 
@@ -166,6 +171,12 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Property<string>("IMEI")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTracking")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LanCapNhatCuoi")
                         .HasColumnType("datetime2");
@@ -186,6 +197,79 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("DeviceInfos");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceRestriction", b =>
+                {
+                    b.Property<Guid>("RestrictionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AllowedDomains")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("BlockedApps")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BlockedDomains")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsFirewallEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Mode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RestrictionId");
+
+                    b.HasIndex("DeviceId");
+
+                    b.ToTable("DeviceRestrictions");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.ExamSchedule", b =>
+                {
+                    b.Property<Guid>("ExamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("DaThiXong")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("GhiChu")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MonThi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ThoiGianThi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ExamId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("ExamSchedules");
                 });
 
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.LocationHistory", b =>
@@ -254,6 +338,9 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Property<double>("BanKinh")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("ChildrenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("KinhDo")
                         .HasColumnType("float");
 
@@ -271,7 +358,76 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
 
                     b.HasKey("SafeZoneId");
 
+                    b.HasIndex("ChildrenId");
+
                     b.ToTable("SafeZones");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Schedule", b =>
+                {
+                    b.Property<Guid>("ScheduleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("GioBatDau")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("GioKetThuc")
+                        .HasColumnType("time");
+
+                    b.Property<string>("TenMonHoc")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Thu")
+                        .HasColumnType("int");
+
+                    b.HasKey("ScheduleId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.StudyPeriod", b =>
+                {
+                    b.Property<Guid>("StudyPeriodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RepeatPattern")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("StudyPeriodId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("StudyPeriods");
                 });
 
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Alert", b =>
@@ -285,11 +441,42 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("Child");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DangerZone", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildrenId");
+
+                    b.Navigation("Child");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", b =>
                 {
                     b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
                         .WithOne("DeviceInfo")
                         .HasForeignKey("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", "ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceRestriction", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", "Device")
+                        .WithMany("DeviceRestrictions")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.ExamSchedule", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany("ExamSchedules")
+                        .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -318,15 +505,57 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data.Migrations
                     b.Navigation("Child");
                 });
 
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.SafeZone", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany()
+                        .HasForeignKey("ChildrenId");
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Schedule", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany("Schedules")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.StudyPeriod", b =>
+                {
+                    b.HasOne("Backend_QLTE.ChildService.Domain.Entities.Child", "Child")
+                        .WithMany("StudyPeriods")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Child");
+                });
+
             modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.Child", b =>
                 {
                     b.Navigation("Alerts");
 
                     b.Navigation("DeviceInfo");
 
+                    b.Navigation("ExamSchedules");
+
                     b.Navigation("LocationHistories");
 
                     b.Navigation("SOSRequests");
+
+                    b.Navigation("Schedules");
+
+                    b.Navigation("StudyPeriods");
+                });
+
+            modelBuilder.Entity("Backend_QLTE.ChildService.Domain.Entities.DeviceInfo", b =>
+                {
+                    b.Navigation("DeviceRestrictions");
                 });
 #pragma warning restore 612, 618
         }

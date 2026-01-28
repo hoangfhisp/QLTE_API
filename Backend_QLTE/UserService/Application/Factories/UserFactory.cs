@@ -13,7 +13,7 @@ namespace Backend_QLTE.UserService.Application.Factories
         {
             return new User
             {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = Guid.NewGuid().ToString(),
                 Email = userRegister.Email,
                 UserName = userName,
                 PhoneNumber = userRegister.PhoneNumber,
@@ -28,7 +28,7 @@ namespace Backend_QLTE.UserService.Application.Factories
         {
             return new User
             {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = Guid.NewGuid().ToString(),
                 Email = externalUser.Email,
                 NameND = externalUser.NameND,
                 UserName = userName,

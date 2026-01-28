@@ -33,5 +33,21 @@ namespace Backend_QLTE.AuthService.Infrastructure.Repositories
             await _context.SaveChangesAsync(cancellationToken);
             return refreshToken;
         }
+
+        public async Task<(List<RefreshToken> tokens, int total, int last)> GetAllAsync(int page, int limit, CancellationToken cancellationToken = default)
+        {
+            var query = _context.RefreshTokens.AsQueryable();
+
+            var total = await query.CountAsync(cancellationToken);
+            var last = (int)Math.Ceiling((double)total / limit);
+
+            var tokens = await query
+                .OrderByDescending(t => t.CreatedAt) // 🕓 Mới nhất trước
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToListAsync(cancellationToken);
+
+            return (tokens, total, last);
+        }
     }
 }

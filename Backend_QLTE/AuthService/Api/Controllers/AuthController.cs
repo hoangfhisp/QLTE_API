@@ -61,6 +61,7 @@ namespace Backend_QLTE.AuthService.Api.Controllers
         }
 
         [HttpPost("UserLogOut")]
+        [Authorize]
         public async Task<IActionResult> UserLogOut(LogOutRequestDTO request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("API Response: Bắt đầu LogOut");
@@ -118,6 +119,14 @@ namespace Backend_QLTE.AuthService.Api.Controllers
             _logger.LogInformation("API Response: Bắt đầu VerifyOtpChangeEmail");
             var result = await _authService.VerifyOtpForChangeEmailAsync(request, cancellationToken);
             _logger.LogInformation("API Response: VerifyOtpChangeEmail với trạng thái {Status}", result.Status);
+            return Ok(result);
+        }
+
+        [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll(int page = 1, int limit = 10, CancellationToken cancellationToken = default)
+        {
+            var result = await _authService.GetAllAsync(page, limit, cancellationToken);
             return Ok(result);
         }
     }

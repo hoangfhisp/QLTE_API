@@ -15,23 +15,49 @@ namespace Backend_QLTE.ChildService.Infrastructure.Data
         public DbSet<SOSRequest> SOSRequests { get; set; }
         public DbSet<DeviceInfo> DeviceInfos { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<StudyPeriod> StudyPeriods { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }             
+        public DbSet<ExamSchedule> ExamSchedules { get; set; }
+        public DbSet<DeviceRestriction> DeviceRestrictions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // quan hệ 1-1: Child - DeviceInfo
             modelBuilder.Entity<Child>()
                 .HasOne(c => c.DeviceInfo)
                 .WithOne(d => d.Child)
                 .HasForeignKey<DeviceInfo>(d => d.ChildId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // quan hệ 1-n: Child - LocationHistory
             modelBuilder.Entity<Child>()
                 .HasMany(c => c.LocationHistories)
                 .WithOne(l => l.Child)
                 .HasForeignKey(l => l.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Child>()
+                .HasMany(c => c.StudyPeriods)
+                .WithOne(sp => sp.Child)
+                .HasForeignKey(sp => sp.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Child>()
+                .HasMany(c => c.Schedules)
+                .WithOne(s => s.Child)
+                .HasForeignKey(s => s.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Child>()
+                .HasMany(c => c.ExamSchedules)
+                .WithOne(es => es.Child)
+                .HasForeignKey(es => es.ChildId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DeviceInfo>()
+                .HasMany(d => d.DeviceRestrictions)
+                .WithOne(r => r.Device)
+                .HasForeignKey(r => r.DeviceId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
